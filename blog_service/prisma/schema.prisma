@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets =["native", "debian-openssl-1.0.x", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://mofukaze:SuijoYuki514@106.52.220.73:3306/mofukaze"
+  //url      = "mysql://root:SuijoYuki514@localhost:3306/bookstore"
+  //url      = "mysql://Mofukaze:SuijoYuki514@localhost:3306/mofukaze"
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  content   String @db.LongText
+ posttime DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  articleId Int
+  article      Article? @relation(fields: [articleId], references: [id], map: "Comment_articleId_fkey")
+  collectionId Int?
+  collection   Collection? @relation(fields: [collectionId], references: [id], map: "Comment_collectionId_fkey")
+
+  @@map("comment")
+  @@index([articleId], map: "Comment_articleId_fkey")
+  @@index([collectionId], map: "Comment_collectionId_fkey")
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String @db.LongText
+  tag String
+  subTag String   @default("default_value")
+  posttime DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  comments  Comment[]
+
+    @@map("article")
+
+}
+
+model Collection{
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String @db.LongText
+  tag String
+  posttime DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  comments  Comment[]
+  imageUrl  String
+
+    @@map("collection")
+
+}
