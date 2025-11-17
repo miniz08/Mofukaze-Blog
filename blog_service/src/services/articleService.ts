@@ -13,6 +13,7 @@ export class ArticleService {
         content,
         tag,
         subTag,
+        posttime: new Date()
       },
     });
   }

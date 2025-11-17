@@ -13,6 +13,7 @@ export class CollectionService {
         content,
         tag,
         imageUrl,
+        posttime: new Date()
       },
     });
   }
