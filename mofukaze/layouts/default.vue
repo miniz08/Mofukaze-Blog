@@ -164,6 +164,13 @@ background: url('http://mofukaze.static.com:8081/img/frame/Koishi in the sky.jpg
   box-shadow: 0 10px 40px rgba(80, 160, 255, 0.25);
   transition: all 0.4s ease;
 }
+.paper img {
+  max-width: 89%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+}
+
 
 /* 浮动动画 */
 .paper:hover {

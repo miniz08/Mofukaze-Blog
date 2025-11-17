@@ -337,8 +337,13 @@ async function uploadImage(image: string, title: string) {
     })
     if (!res.ok) throw new Error(await res.text())
     const result = await res.json()
-    if (result.status === 'success' && result.filePath) return result.filePath
-    throw new Error('图片上传失败')
+    if (result.status === 'success' && result.fileUrl)
+    {
+      return result.fileUrl;
+    }
+    else {
+      throw new Error('图片上传失败')
+    }
   } catch (error) {
     console.error(error)
     throw error

@@ -101,7 +101,7 @@ export class CollectionController {
       const result = await CollectionService.uploadImage(image, title);
       return {
         status: 'success',
-        filePath: result.filePath,
+        fileUrl: result.fileUrl,
       };
     } catch (error: any) {
       console.error('❌ Error saving the image:', error);

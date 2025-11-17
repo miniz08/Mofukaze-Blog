@@ -400,7 +400,7 @@ function generateRandomTitle(length = 10) {
 
 async function uploadImage(image: string, title: string) {
   try {
-    const response = await fetch('/api/posts/article/uploadImage', {
+    const response = await fetch('/api/posts/collection/uploadImage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image, title }),
@@ -409,9 +409,10 @@ async function uploadImage(image: string, title: string) {
     if (!response.ok) throw new Error(await response.text())
     const result = await response.json()
 
-    if (result.status === 'success' && result.filePath) {
-      return result.filePath
-    } else {
+    if (result.status === 'success' && result.fileUrl)
+    {
+      return result.fileUrl;
+    }else {
       throw new Error('图片上传失败')
     }
   } catch (error) {

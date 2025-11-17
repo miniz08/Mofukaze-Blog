@@ -172,7 +172,7 @@ static async getLatestArticles(event: any) {
       const result = await ArticleService.uploadImage(image, title);
       return {
         status: 'success',
-        filePath: result.filePath,
+        fileUrl: result.fileUrl,
       };
     } catch (error: any) {
       console.error('❌ Error saving the image:', error);
