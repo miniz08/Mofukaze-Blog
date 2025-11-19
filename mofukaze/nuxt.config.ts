@@ -40,14 +40,14 @@ export default defineNuxtConfig({
 
     // ✨✨✨ 关键：把 CDN 常量注入到所有文件（包括 CSS！）
     define: {
-      __CDN__: JSON.stringify(process.env.CDN || 'http://mofukaze.static.com:8081')
+      __CDN__: JSON.stringify(process.env.CDN || 'http://mofukaze.me')
     }
   },
 
   // ✨✨✨ 关键：Nuxt Runtime Config（TS/Vue 模板会用到）
   runtimeConfig: {
     public: {
-      cdn: process.env.CDN || 'http://mofukaze.static.com:8081'
+      cdn: process.env.CDN || 'http://mofukaze.me'
     }
   }
 })

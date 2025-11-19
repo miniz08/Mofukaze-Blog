@@ -54,7 +54,7 @@ services:
       - "3002"
     environment:
       NODE_ENV: production
-      UPLOAD_URL: "http://mofukaze.static.com:8081"
+      UPLOAD_URL: "http://mofukaze.me"
       UPLOAD_IMG_TEXT_DIR: "/resources/img/text"
       UPLOAD_IMG_COVER_DIR: "/resources/img/cover"
     networks:

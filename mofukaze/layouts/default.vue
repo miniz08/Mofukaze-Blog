@@ -83,7 +83,7 @@ html, body {
   left: 0;
   width: 100%;
   height: 100%;
-background: url('http://mofukaze.static.com:8081/img/frame/Koishi in the sky.jpg') no-repeat center center fixed;
+background: url('http://mofukaze.me/img/frame/Koishi in the sky.jpg') no-repeat center center fixed;
   background-size: cover;
   z-index: -3;
   filter: brightness(0.95) saturate(110%);
