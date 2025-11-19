@@ -2,6 +2,9 @@
 # ① 构建阶段（Build Stage）
 # ===============================
 FROM node:20 AS builder
+# 创建资源目录
+RUN mkdir -p /resources
+
 WORKDIR /app
 
 # 先拷贝依赖文件以利用缓存

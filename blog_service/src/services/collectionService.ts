@@ -56,7 +56,7 @@ export class CollectionService {
     });
   }
 
-/**
+/*
  * 上传图片（负责：文件写入 + 生成数据库路径）
  */
 static async uploadImage(image: string, title: string) {

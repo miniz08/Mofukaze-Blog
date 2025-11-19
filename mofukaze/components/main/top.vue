@@ -93,7 +93,7 @@ watch(
   background-color: rgba(255, 255, 255, 0.08); /* 半透明玻璃纸感 */
   backdrop-filter: blur(18px) saturate(180%);
   z-index: 9999; /* 保证在前 */
-  background-image: url('http://mofukaze.static.com:8081/img/frame/top.jpg'); /* 原背景图 */
+  background-image: url('http://mofukaze.me/img/frame/top.jpg'); /* 原背景图 */
   background-size: cover;
   background-repeat: no-repeat;
   border: 3px solid rgba(255, 255, 255, 0.25); /* 半透明边框 */
