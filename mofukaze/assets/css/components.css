@@ -1,0 +1,195 @@
+/* assets/css/components.css */
+/* paper容器样式 */
+.paper {
+  width: 80%;
+  padding: 20px;
+  position: relative;
+  border-radius: 20px;
+  backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: 0 10px 40px rgba(80,160,255,0.18);
+  transition: box-shadow .3s ease, transform .25s ease;
+  overflow: visible;
+  will-change: box-shadow, transform;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1), 
+    rgba(255, 255, 255, 0.05));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-image: linear-gradient(45deg, 
+    rgba(255,255,255,0.3), 
+    rgba(138,43,226,0.3), 
+    rgba(30,144,255,0.3)) 1;
+}
+
+.paper-inner {
+  position: relative;
+  z-index: 1;
+  box-sizing: content-box;
+}
+
+
+.paper:hover {
+  transform: translateY(0);
+  box-shadow: 0 18px 60px rgba(100,180,255,0.28);
+}
+
+.paper img {
+  max-width: 89%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+}
+
+.paper > * {
+  position: relative;
+  z-index: 1;
+}
+
+.paper p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* 固定按钮样式 */
+.fixed-button {
+  position: fixed;
+  left: 20px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(100, 180, 255, 0.25);
+  z-index: 3000;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.fixed-button:hover {
+  background: rgba(120, 180, 255, 0.5);
+  box-shadow: 0 0 15px rgba(120, 180, 255, 0.6);
+  transform: scale(1.05);
+}
+
+/* 按钮位置 */
+#back-to-top {
+  bottom: 600px;
+}
+
+#back-to-bottom {
+  bottom: 240px;
+}
+
+/* 主题切换器样式 */
+.theme-switcher-fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+}
+
+.theme-switcher {
+  position: relative;
+  z-index: 1000;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: var(--theme-text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-label {
+  font-weight: 500;
+}
+
+.theme-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--theme-surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(2px);
+}
+
+.theme-option.active {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.theme-preview {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.color-primary,
+.color-secondary,
+.color-accent {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.theme-name {
+  color: var(--theme-text);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.theme-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+/* 菜单动画 */
+.theme-menu-enter-active,
+.theme-menu-leave-active {
+  transition: all 0.3s ease;
+}
+
+.theme-menu-enter-from,
+.theme-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}

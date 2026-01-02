@@ -1,0 +1,28 @@
+/* assets/css/base.css */
+@font-face {
+  font-family: "喵字摄影体";
+  src: url("/font/%E5%96%B5%E5%AD%97%E6%91%84%E5%BD%B1%E4%BD%93.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 全局字体 */
+html, body {
+  font-family: "喵字摄影体", sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* CSS变量定义 */
+:root {
+  --theme-primary: #ffffff;
+  --theme-secondary: #e6f3ff;
+  --theme-accent: #4a90e2;
+  --theme-background: rgba(0,0,0,0.8);
+  --theme-surface: rgba(255,255,255,0.08);
+  --theme-text: #ffffff;
+  --theme-text-secondary: rgba(255,255,255,0.7);
+}

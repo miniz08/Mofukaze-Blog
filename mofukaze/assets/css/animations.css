@@ -1,0 +1,26 @@
+/* assets/css/animations.css */
+/* 星光动画 */
+@keyframes floatStars {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 1000px 1000px, 2000px 2000px, 1500px 1500px; }
+}
+
+@keyframes twinkleStars {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes starsFloat {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: -800px 1200px, 900px -900px, 1500px 500px; }
+}
+
+@keyframes subtleTwinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes gentleGlow {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 0.9; transform: scale(1.02); }
+}
