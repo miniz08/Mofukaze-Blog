@@ -1,0 +1,50 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "start": "nuxt start"
+  },
+  "dependencies": {
+    "@element-plus/nuxt": "^1.1.4",
+    "@prisma/client": "^6.7.0",
+    "@tiptap/extension-text-style": "^2.26.3",
+    "@tiptap/starter-kit": "^2.5.4",
+    "@types/busboy": "^1.5.4",
+    "@types/formidable": "^3.4.6",
+    "@vueuse/core": "^13.9.0",
+    "busboy": "^1.6.0",
+    "cropperjs": "^1.6.2",
+    "element-plus": "^2.8.1",
+    "express": "^5.1.0",
+    "formidable": "^3.5.4",
+    "less": "^4.4.2",
+    "lucide-vue-next": "^0.548.0",
+    "mavon-editor": "^2.10.4",
+    "multiparty": "^4.2.3",
+    "nuxt": "^3.11.2",
+    "nuxt-monaco-editor": "^1.4.0",
+    "nuxt-tiptap-editor": "^2.3.1",
+    "sass": "^1.93.2",
+    "tinymce": "^8.1.2",
+    "ts-node": "^10.9.2",
+    "uuid": "^13.0.0",
+    "vue": "^3.4.21",
+    "vue-cropper": "^0.6.5",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@tiptap/extension-image": "^2.5.4",
+    "@types/node": "^20.12.11",
+    "prisma": "^6.7.0",
+    "typescript": "^5.4.5"
+  },
+  "prisma": {
+    "getUserinfo": "node prisma/getUserinfo.js"
+  }
+}
