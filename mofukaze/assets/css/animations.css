@@ -21,11 +21,11 @@
 
 @keyframes particleVeil {
   from {
-    background-position: 0 0, 120px 60px;
+    background-position: 0 0, 120px 60px, 40px 140px;
     transform: translate3d(-1%, -1%, 0);
   }
   to {
-    background-position: 900px -640px, -520px 780px;
+    background-position: 760px -520px, -420px 660px, 520px 420px;
     transform: translate3d(1%, 1%, 0);
   }
 }
@@ -49,23 +49,13 @@
   }
 }
 
-@keyframes meteorSweep {
-  0%, 58% {
-    opacity: 0;
-    transform: translate3d(-18%, -18%, 0) rotate(-8deg);
+@keyframes starlightConstellationDrift {
+  from {
+    background-position: 30px 40px, 40px 80px, 180px 20px;
   }
-  63% {
-    opacity: 0.82;
+  to {
+    background-position: -330px 300px, 420px -260px, -240px 460px;
   }
-  78%, 100% {
-    opacity: 0;
-    transform: translate3d(18%, 20%, 0) rotate(-8deg);
-  }
-}
-
-@keyframes gentleGlow {
-  from { opacity: 0.5; transform: scale(1); }
-  to { opacity: 0.9; transform: scale(1.02); }
 }
 
 @keyframes backgroundDrift {
@@ -93,26 +83,32 @@
 @keyframes contentRise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px) scale(0.995);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes paperSheen {
-  0%, 48% {
-    opacity: 0;
-    transform: translateX(-38%);
-  }
-  58% {
-    opacity: 0.5;
-  }
-  72%, 100% {
-    opacity: 0;
-    transform: translateX(34%);
-  }
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 0.32s ease,
+    transform 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.36s ease;
+}
+
+.page-enter-from {
+  filter: blur(4px);
+  opacity: 0;
+  transform: translateY(10px) scale(0.992);
+}
+
+.page-leave-to {
+  filter: blur(3px);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.996);
 }
 
 @keyframes auroraFlow {
@@ -133,11 +129,6 @@
     filter: hue-rotate(0deg) blur(0);
     transform: skewY(-4deg) translateY(-4%);
   }
-}
-
-@keyframes cherryBlossom {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: 800px 1200px, 1600px 800px, 1200px 1600px; }
 }
 
 @keyframes sakuraPetalFall {
@@ -162,20 +153,6 @@
   to {
     opacity: 0.58;
     transform: translate3d(2%, 2%, 0) rotate(2deg);
-  }
-}
-
-@keyframes sakuraWindTrace {
-  0% {
-    background-position: -420px 0, 0 0;
-    opacity: 0.22;
-  }
-  45% {
-    opacity: 0.5;
-  }
-  100% {
-    background-position: 920px 180px, 520px 680px;
-    opacity: 0.28;
   }
 }
 

@@ -390,6 +390,7 @@ useSeoMeta({
   flex-direction: column;
   gap: 22px;
   min-height: 64vh;
+  max-width: 100%;
 }
 
 .list-header {
@@ -453,7 +454,7 @@ h1 {
 }
 
 .list-state {
-  background: var(--theme-surface);
+  background: color-mix(in srgb, var(--theme-surface) 72%, var(--theme-background));
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
@@ -474,11 +475,11 @@ h1 {
 .subtag-section,
 .quick-sidebar,
 .quick-reader {
-  background: var(--theme-surface);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--theme-surface) 74%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 8px;
   box-shadow: 0 12px 32px var(--theme-shadow);
-  backdrop-filter: var(--theme-blur) saturate(170%);
+  backdrop-filter: var(--theme-blur) saturate(145%);
 }
 
 .subtag-section {
@@ -487,7 +488,7 @@ h1 {
 
 .subtag-header {
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--theme-surface) 48%, transparent);
   border: 0;
   color: var(--theme-text);
   cursor: pointer;
@@ -524,7 +525,7 @@ h1 {
 
 .drawer-list li {
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--theme-surface) 58%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   display: flex;
@@ -590,13 +591,11 @@ h1 {
 
 .quick-read-shell {
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  height: calc(100vh - 220px);
-  margin-left: 50%;
-  min-height: 620px;
-  transform: translateX(-50%);
-  width: min(94vw, 1560px);
+  gap: 16px;
+  grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+  height: min(72vh, 760px);
+  min-height: 520px;
+  width: 100%;
 }
 
 .quick-sidebar,
@@ -660,7 +659,7 @@ h1 {
 }
 
 .quick-article-item {
-  background: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--theme-surface) 54%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 8px;
   color: var(--theme-text);
@@ -682,7 +681,7 @@ h1 {
 
 .quick-reader {
   overflow: auto;
-  padding: clamp(22px, 3vw, 42px);
+  padding: clamp(20px, 2.4vw, 32px);
 }
 
 .reader-state {
@@ -701,15 +700,15 @@ h1 {
 }
 
 .reader-article header h2 {
-  font-size: clamp(28px, 3vw, 42px);
+  font-size: clamp(26px, 2.7vw, 38px);
   line-height: 1.2;
   margin: 6px 0 10px;
 }
 
 .quick-article-content {
   color: var(--theme-text);
-  font-size: 18px;
-  line-height: 1.9;
+  font-size: 17px;
+  line-height: 1.86;
   overflow-wrap: anywhere;
 }
 
@@ -757,7 +756,7 @@ h1 {
     grid-template-columns: 1fr;
     height: auto;
     min-height: 0;
-    width: min(92vw, 760px);
+    width: 100%;
   }
 
   .quick-sidebar,

@@ -38,6 +38,7 @@ export const useAdmin = () => {
   const clearToken = () => {
     adminToken.value = ''
     isAdmin.value = false
+    isLoading.value = false
   }
 
   /**
@@ -46,6 +47,7 @@ export const useAdmin = () => {
    */
 const checkAdminStatus = async () => {
   if (!adminToken.value) {
+    isLoading.value = false
     isAdmin.value = false
     return
   }
@@ -112,4 +114,3 @@ const checkAdminStatus = async () => {
     getAuthHeader,
   }
 }
-

@@ -9,14 +9,18 @@
         <button class="ghost-button" @click="navigateTo('/login')">
           管理员登录
         </button>
-        <button class="primary-button" :disabled="isLoading || !isAuthorized" @click="loadSummary">
+        <button class="primary-button" :disabled="isBootstrapping || !isAuthorized" @click="loadSummary">
           刷新数据
         </button>
       </div>
     </header>
 
-    <div v-if="admin.isLoading || isLoading" class="dashboard-state">
+    <div v-if="isBootstrapping" class="dashboard-state">
       正在整理博客的风向...
+    </div>
+
+    <div v-else-if="errorMessage" class="dashboard-state error-state">
+      {{ errorMessage }}
     </div>
 
     <div v-else-if="!isAuthorized" class="locked-panel">
@@ -154,8 +158,8 @@
       </div>
     </template>
 
-    <div v-else-if="errorMessage" class="dashboard-state error-state">
-      {{ errorMessage }}
+    <div v-else class="dashboard-state">
+      暂时没有可展示的统计数据。
     </div>
   </section>
 </template>
@@ -204,9 +208,11 @@ type Summary = {
 const admin = useAdmin()
 const summary = ref<Summary | null>(null)
 const isLoading = ref(false)
+const hasCheckedAuth = ref(false)
 const errorMessage = ref('')
 
 const isAuthorized = computed(() => admin.isAdmin.value === true)
+const isBootstrapping = computed(() => !hasCheckedAuth.value || isLoading.value)
 
 const formatNumber = (value: number) => new Intl.NumberFormat('zh-CN').format(value || 0)
 const stripHtml = (value: string) => String(value || '').replace(/<[^>]*>/g, '').trim()
@@ -302,12 +308,24 @@ const commentTarget = (comment: Summary['latestComments'][number]) => {
 
 const loadSummary = async () => {
   errorMessage.value = ''
+
+  if (!isAuthorized.value) {
+    summary.value = null
+    return
+  }
+
   isLoading.value = true
 
   try {
+    const headers = admin.getAuthHeader()
+    if (!headers) {
+      summary.value = null
+      return
+    }
+
     const res: any = await $fetch('/api/posts/analytics/adminSummary', {
       method: 'POST',
-      headers: admin.getAuthHeader(),
+      headers,
     })
 
     if (res?.status !== 'success') {
@@ -324,7 +342,14 @@ const loadSummary = async () => {
 }
 
 onMounted(async () => {
-  await admin.checkAdminStatus()
+  try {
+    await admin.checkAdminStatus()
+  } catch (err) {
+    console.warn('[admin-dashboard] checkAdminStatus failed', err)
+  } finally {
+    hasCheckedAuth.value = true
+  }
+
   if (isAuthorized.value) {
     await loadSummary()
   }
@@ -390,7 +415,7 @@ h1 {
 }
 
 .ghost-button {
-  background: color-mix(in srgb, var(--theme-surface) 80%, transparent);
+  background: color-mix(in srgb, var(--theme-surface) 68%, var(--theme-background));
   color: var(--theme-text);
 }
 
@@ -409,11 +434,11 @@ h1 {
 .locked-panel,
 .panel,
 .stat-card {
-  background: var(--theme-surface);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: color-mix(in srgb, var(--theme-surface) 74%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 8px;
   box-shadow: 0 12px 32px var(--theme-shadow);
-  backdrop-filter: var(--theme-blur) saturate(170%);
+  backdrop-filter: var(--theme-blur) saturate(145%);
 }
 
 .dashboard-state {
@@ -458,10 +483,10 @@ h1 {
 }
 
 .stat-card::after {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 62%);
+  background: radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.18), transparent 46%);
   content: "";
   inset: 0;
-  opacity: 0.5;
+  opacity: 0.46;
   pointer-events: none;
   position: absolute;
 }
@@ -654,7 +679,7 @@ h1 {
 .comment-item,
 .rank-item,
 .latest-item {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--theme-surface) 58%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   color: inherit;

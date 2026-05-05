@@ -483,7 +483,7 @@ useSeoMeta({
 }
 
 .article-state {
-  background: var(--theme-surface);
+  background: color-mix(in srgb, var(--theme-surface) 72%, var(--theme-background));
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
@@ -498,12 +498,16 @@ useSeoMeta({
 .article-layout {
   align-items: start;
   display: grid;
-  gap: 22px;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 20px;
+  grid-template-columns: minmax(0, 820px) 240px;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1100px;
 }
 
 .article-layout.without-toc {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 860px);
+  max-width: 900px;
 }
 
 .article-main {
@@ -511,21 +515,22 @@ useSeoMeta({
   flex-direction: column;
   gap: 22px;
   min-width: 0;
+  width: 100%;
 }
 
 .article-card,
 .comment-section,
 .toc-panel {
-  backdrop-filter: var(--theme-blur) saturate(170%);
-  background: var(--theme-surface);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: var(--theme-blur) saturate(145%);
+  background: color-mix(in srgb, var(--theme-surface) 74%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 8px;
   box-shadow: 0 12px 32px var(--theme-shadow);
 }
 
 .article-card {
   overflow: hidden;
-  padding: clamp(22px, 4vw, 42px);
+  padding: clamp(22px, 3vw, 34px);
 }
 
 .article-header {
@@ -544,7 +549,7 @@ useSeoMeta({
 }
 
 .article-header h1 {
-  font-size: clamp(30px, 4vw, 48px);
+  font-size: clamp(28px, 3.4vw, 42px);
   line-height: 1.18;
   margin: 0;
 }
@@ -614,8 +619,8 @@ useSeoMeta({
 
 .article-content {
   color: var(--theme-text);
-  font-size: 18px;
-  line-height: 1.9;
+  font-size: 17px;
+  line-height: 1.86;
   overflow-wrap: anywhere;
 }
 
@@ -760,7 +765,7 @@ useSeoMeta({
 .comment-form input,
 .comment-form textarea,
 .reply-form textarea {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--theme-surface) 62%, var(--theme-background));
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: var(--theme-text);
@@ -800,7 +805,7 @@ useSeoMeta({
 }
 
 .comment-item {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--theme-surface) 66%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   margin-left: calc(var(--comment-depth, 0) * 24px);
@@ -858,6 +863,7 @@ useSeoMeta({
 @media (max-width: 1080px) {
   .article-layout {
     grid-template-columns: 1fr;
+    max-width: 900px;
   }
 
   .article-toc {
