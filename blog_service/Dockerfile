@@ -16,6 +16,7 @@ RUN npm install
 COPY . .
 
 # 生成 Prisma Client
+ENV DATABASE_URL="mysql://placeholder:placeholder@localhost:3306/placeholder"
 RUN npx prisma generate
 
 # 编译项目
