@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets =["native", "debian-openssl-1.0.x", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url = "mysql://mofukaze:SuijoYuki514@106.52.220.73:3306/mofukaze"
+}
+
+model Comment {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String?
+  content      String      @db.LongText
+  posttime     DateTime    @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+
+  // 让两者都可选，以实现“评论文章或评论集合”
+  articleId    Int?
+  article      Article?    @relation(fields: [articleId], references: [id], map: "Comment_articleId_fkey")
+
+  collectionId Int?
+  collection   Collection? @relation(fields: [collectionId], references: [id], map: "Comment_collectionId_fkey")
+
+  // 评论状态，可后期加入后台审核功能
+  status       String      @default("approved")
+
+  @@map("comment")
+  @@index([articleId], map: "Comment_articleId_fkey")
+  @@index([collectionId], map: "Comment_collectionId_fkey")
+}
+
+model Article {
+  id        Int        @id @default(autoincrement())
+  title     String
+  content   String      @db.LongText
+  tag       String
+  subTag    String      @default("default_value")
+  posttime  DateTime    @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  visible   Boolean     @default(true)     // ⭐ 新增字段：默认可见
+  comments  Comment[]
+  visitEvents VisitEvent[]
+
+  @@map("article")
+}
+
+
+model Collection {
+  id        Int        @id @default(autoincrement())
+  title     String
+  content   String      @db.LongText
+  tag       String
+  posttime  DateTime    @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  comments  Comment[]
+  imageUrl  String
+
+  @@map("collection")
+}
+
+model VisitEvent {
+  id           Int      @id @default(autoincrement())
+  path         String
+  articleId    Int?
+  article      Article? @relation(fields: [articleId], references: [id], onDelete: SetNull, map: "VisitEvent_articleId_fkey")
+  articleTitle String?
+  visitorId    String?
+  sessionId    String?
+  referrer     String?  @db.VarChar(512)
+  userAgent    String?  @db.VarChar(512)
+  createdAt    DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+
+  @@map("visit_event")
+  @@index([articleId], map: "VisitEvent_articleId_idx")
+  @@index([createdAt], map: "VisitEvent_createdAt_idx")
+  @@index([visitorId], map: "VisitEvent_visitorId_idx")
+}
