@@ -8,18 +8,27 @@
         :style="{ background: previousBackground }"
       ></div>
     </div>
-    <div class="midnight-meteors" aria-hidden="true">
-      <span style="--top: 6vh; --left: 96vw; --tail: 190px; --duration: 2.8s; --delay: -0.6s;"></span>
-      <span style="--top: 18vh; --left: 112vw; --tail: 150px; --duration: 3.4s; --delay: -2.1s;"></span>
-      <span style="--top: -4vh; --left: 78vw; --tail: 220px; --duration: 2.6s; --delay: -1.4s;"></span>
-      <span style="--top: 32vh; --left: 104vw; --tail: 120px; --duration: 3.1s; --delay: -3s;"></span>
-      <span style="--top: 12vh; --left: 128vw; --tail: 170px; --duration: 4s; --delay: -0.2s;"></span>
-      <span style="--top: 48vh; --left: 88vw; --tail: 140px; --duration: 2.9s; --delay: -1.9s;"></span>
-      <span style="--top: 2vh; --left: 55vw; --tail: 110px; --duration: 3.6s; --delay: -2.8s;"></span>
-      <span style="--top: 24vh; --left: 72vw; --tail: 160px; --duration: 3.2s; --delay: -0.9s;"></span>
-      <span style="--top: -8vh; --left: 115vw; --tail: 200px; --duration: 2.5s; --delay: -1.7s;"></span>
-      <span style="--top: 40vh; --left: 122vw; --tail: 130px; --duration: 3.8s; --delay: -3.4s;"></span>
-    </div>
+<div class="midnight-meteors" aria-hidden="true">
+  <span style="--top: -12vh; --left: 92vw; --tail: 220px; --duration: 6.5s; --delay: -0.6s;"></span>
+
+  <span style="--top: -6vh; --left: 80vw; --tail: 180px; --duration: 7.2s; --delay: -2.1s;"></span>
+
+  <span style="--top: 4vh; --left: 108vw; --tail: 240px; --duration: 6.8s; --delay: -1.4s;"></span>
+
+  <span style="--top: 10vh; --left: 70vw; --tail: 170px; --duration: 8s; --delay: -3s;"></span>
+
+  <span style="--top: -10vh; --left: 118vw; --tail: 210px; --duration: 7.5s; --delay: -0.2s;"></span>
+
+  <span style="--top: 16vh; --left: 95vw; --tail: 160px; --duration: 6.9s; --delay: -1.9s;"></span>
+
+  <span style="--top: 22vh; --left: 84vw; --tail: 140px; --duration: 8.4s; --delay: -2.8s;"></span>
+
+  <span style="--top: 0vh; --left: 64vw; --tail: 190px; --duration: 7.8s; --delay: -0.9s;"></span>
+
+  <span style="--top: 30vh; --left: 110vw; --tail: 230px; --duration: 9s; --delay: -1.7s;"></span>
+
+  <span style="--top: 12vh; --left: 126vw; --tail: 175px; --duration: 7.1s; --delay: -3.4s;"></span>
+</div>
 
     <!-- 顶部导航 -->
     <Top class="top-global" />
