@@ -23,6 +23,7 @@
     "element-plus": "^2.8.1",
     "express": "^5.1.0",
     "formidable": "^3.5.4",
+    "katex": "^0.16.45",
     "less": "^4.4.2",
     "lucide-vue-next": "^0.548.0",
     "mavon-editor": "^2.10.4",

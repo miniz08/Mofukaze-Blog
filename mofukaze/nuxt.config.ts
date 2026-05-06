@@ -1,6 +1,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  css: ['katex/dist/katex.min.css'],
+
   // 🔧 应用配置
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },

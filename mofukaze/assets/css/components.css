@@ -64,6 +64,14 @@
   line-height: 1.7;
 }
 
+.latex-node {
+  align-items: center;
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: middle;
+}
+
 .fixed-button {
   background: color-mix(in srgb, var(--theme-surface) 78%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.3);

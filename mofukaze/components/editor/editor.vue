@@ -99,6 +99,13 @@
 >
   <LinkIcon size="13" />
 </button>
+    <button
+      @click="openLatexInput()"
+      :class="{ 'is-active': isLatexMode }"
+      title="LaTeX 公式 (Ctrl+Shift+L)"
+    >
+      <Sigma size="13" />
+    </button>
   </div>
 
   <!-- ⏳ 撤销 / 重做 -->
@@ -140,8 +147,24 @@
     </details>
   </div>
 </div>
-<div >
-</div>
+    <div v-if="isLatexMode" class="latex-input-panel">
+      <textarea
+        ref="latexInputRef"
+        v-model="latexSource"
+        aria-label="LaTeX"
+        class="latex-input"
+        placeholder="E = mc^2"
+        rows="3"
+        @keydown.ctrl.enter.prevent="applyLatex"
+        @keydown.meta.enter.prevent="applyLatex"
+        @keydown.esc.prevent="closeLatexInput"
+      ></textarea>
+      <div class="latex-preview" v-html="latexPreviewHtml"></div>
+      <div class="latex-actions">
+        <button type="button" @click="applyLatex">插入</button>
+        <button type="button" @click="closeLatexInput">取消</button>
+      </div>
+    </div>
     <!-- ✏️ 编辑器正文 -->
     <div class="editor-content-wrapper">
       <EditorContent class="editor-content" :editor="editor" :style="{ fontSize: `${fontSize}px` }" />
@@ -150,14 +173,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { computed, nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import { Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, Undo, Redo, Minus, Link as LinkIcon } from 'lucide-vue-next'
+import { Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, Undo, Redo, Minus, Link as LinkIcon, Sigma } from 'lucide-vue-next'
 import { useAdmin } from '~/composables/useAdmin'
 import Link from '@tiptap/extension-link'
+import { LatexNode } from './latexNode'
+import { renderLatexToHtml } from '~/utils/latex'
 
 const admin = useAdmin()
 // ------------------------------
@@ -211,6 +236,82 @@ async function uploadImage(file: File, title: string) {
 }
 
 // ------------------------------
+// LaTeX Input
+// ------------------------------
+type LatexEditEvent = CustomEvent<{
+  latex?: string
+  pos?: number
+}>
+
+const isLatexMode = ref(false)
+const latexSource = ref('')
+const latexEditPos = ref<number | null>(null)
+const latexInputRef = ref<HTMLTextAreaElement | null>(null)
+
+const latexPreviewHtml = computed(() => {
+  const source = latexSource.value.trim()
+  return source ? renderLatexToHtml(source) : ''
+})
+
+function focusLatexInput() {
+  nextTick(() => {
+    latexInputRef.value?.focus()
+    latexInputRef.value?.select()
+  })
+}
+
+function getSelectedLatexSource() {
+  if (!editor.value) return ''
+
+  const { from, to, empty } = editor.value.state.selection
+  return empty ? '' : editor.value.state.doc.textBetween(from, to, ' ')
+}
+
+function openLatexInput(source?: string, pos: number | null = null) {
+  latexSource.value = source ?? getSelectedLatexSource()
+  latexEditPos.value = pos
+  isLatexMode.value = true
+  focusLatexInput()
+  return true
+}
+
+function closeLatexInput() {
+  isLatexMode.value = false
+  latexSource.value = ''
+  latexEditPos.value = null
+  editor.value?.commands.focus()
+}
+
+function updateLatexAtPosition(pos: number, latex: string) {
+  return editor.value?.commands.command(({ tr }) => {
+    const node = tr.doc.nodeAt(pos)
+    if (node?.type.name !== 'latex') return false
+
+    tr.setNodeMarkup(pos, undefined, { latex })
+    return true
+  })
+}
+
+function applyLatex() {
+  const source = latexSource.value.trim()
+  if (!source || !editor.value) return
+
+  const updatedExistingNode =
+    latexEditPos.value !== null && updateLatexAtPosition(latexEditPos.value, source)
+
+  if (!updatedExistingNode) {
+    editor.value.chain().focus().insertLatex({ latex: source }).run()
+  }
+
+  closeLatexInput()
+}
+
+function handleLatexEdit(event: Event) {
+  const { latex = '', pos } = (event as LatexEditEvent).detail || {}
+  openLatexInput(latex, typeof pos === 'number' ? pos : null)
+}
+
+// ------------------------------
 // Keyboard Shortcuts
 // ------------------------------
 const CustomShortcuts = Extension.create({
@@ -229,6 +330,7 @@ const CustomShortcuts = Extension.create({
       'Mod-o': () => this.editor.chain().focus().toggleOrderedList().run(),
       'Mod-n': () => this.editor.chain().focus().toggleBulletList().run(),
       'Mod-Shift-c': () => this.editor.chain().focus().toggleCodeBlock().run(),
+      'Mod-Shift-l': () => openLatexInput(),
       'Mod-l': () => {
       const url = prompt("请输入链接 URL 💡")
       if (url) {
@@ -315,7 +417,7 @@ const CustomShortcuts = Extension.create({
 // Editor State
 // ------------------------------
 const editor = ref(useEditor({
-  extensions: [StarterKit, Image,Link.configure({
+  extensions: [StarterKit, Image, LatexNode, Link.configure({
     openOnClick: true,
     linkOnPaste: true,
   }), CustomShortcuts],
@@ -339,6 +441,15 @@ defineExpose({
   getHTML: () => editor.value?.getHTML() || '',
   getJSON: () => editor.value?.getJSON() || null,
   setContent: (content: string) => editor.value?.commands.setContent(content)
+})
+
+onMounted(() => {
+  window.addEventListener('mofukaze:edit-latex', handleLatexEdit)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('mofukaze:edit-latex', handleLatexEdit)
+  editor.value?.destroy()
 })
 // ------------------------------
 // Image Upload (for toolbar button)
@@ -492,6 +603,63 @@ function addLink() {
 .editor-toolbar button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.latex-input-panel {
+  display: grid;
+  gap: 10px;
+  margin: 0 0.6rem 0.8rem;
+  padding: 12px;
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.latex-input {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  border: 1px solid #c8d6df;
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.latex-preview {
+  min-height: 42px;
+  overflow-x: auto;
+  border: 1px dashed #c8d6df;
+  border-radius: 6px;
+  padding: 10px;
+  background: #fff;
+}
+
+.latex-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.latex-actions button {
+  border: 1px solid #c8d6df;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  padding: 6px 12px;
+}
+
+:deep(.latex-node) {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: middle;
+}
+
+:deep(.latex-node.is-selected) {
+  outline: 2px solid #00b4ff;
+  outline-offset: 2px;
 }
 
 /* ✏️ 编辑区 */
