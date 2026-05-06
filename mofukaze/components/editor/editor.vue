@@ -1,6 +1,11 @@
 <template>
 <div>
-    <!-- 🌈 工具栏区域（移动到标签下方） -->
+    <!-- ✏️ 编辑器正文 -->
+    <div class="editor-content-wrapper">
+      <EditorContent class="editor-content" :editor="editor" :style="{ fontSize: `${fontSize}px` }" />
+    </div>
+
+    <!-- 🌈 工具栏区域（移动到正文下方） -->
     <div v-if="editor" class="editor-toolbar">
   <!-- 🖋️ 基本文本格式 -->
   <div class="toolbar-group">
@@ -164,10 +169,6 @@
         <button type="button" @click="applyLatex">插入</button>
         <button type="button" @click="closeLatexInput">取消</button>
       </div>
-    </div>
-    <!-- ✏️ 编辑器正文 -->
-    <div class="editor-content-wrapper">
-      <EditorContent class="editor-content" :editor="editor" :style="{ fontSize: `${fontSize}px` }" />
     </div>
 </div>
 </template>
