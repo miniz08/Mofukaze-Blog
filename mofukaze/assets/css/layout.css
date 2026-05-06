@@ -7,7 +7,10 @@
 }
 
 #background {
-  background: url("http://mofukaze.me/img/frame/Koishi in the sky.jpg") no-repeat center center fixed;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(74, 144, 226, 0.24), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(236, 72, 153, 0.12), transparent 30%),
+    linear-gradient(135deg, #101827 0%, #1b2340 48%, #0a1020 100%);
   background-size: cover;
   filter: brightness(0.96) saturate(112%);
   height: 100%;
@@ -20,6 +23,27 @@
   will-change: transform, filter;
   z-index: -3;
   animation: backgroundDrift 32s ease-in-out infinite alternate;
+}
+
+.background-snapshot {
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+#wrapper.theme-revealing .background-snapshot {
+  animation: themeSnapshotFade 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+#wrapper.theme-revealing .paper,
+#wrapper.theme-revealing .theme-toggle-btn,
+#wrapper.theme-revealing .fixed-button {
+  animation: themeSurfaceSettle 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 #background::before,

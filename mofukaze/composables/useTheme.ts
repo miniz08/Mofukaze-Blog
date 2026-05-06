@@ -1,5 +1,5 @@
 
-import { ref, computed } from 'vue'
+import { computed, readonly, ref } from 'vue'
 
 export interface Theme {
   name: string
@@ -124,6 +124,58 @@ starlight: {
 }
 
 const currentTheme = ref<string>('starlight')
+const isThemeLoading = ref(false)
+const pendingTheme = ref<string | null>(null)
+const loadedBackgroundUrls = new Set<string>()
+let themeRequestId = 0
+
+export const getThemeBackgroundUrl = (theme: Theme) => {
+  const match = theme.backgrounds.main.match(/url\((['"]?)(.*?)\1\)/)
+  return match?.[2] ?? ''
+}
+
+export const preloadThemeBackground = (theme: Theme, timeout = 9000) => {
+  if (!process.client) {
+    return Promise.resolve()
+  }
+
+  const url = getThemeBackgroundUrl(theme)
+
+  if (!url || loadedBackgroundUrls.has(url)) {
+    return Promise.resolve()
+  }
+
+  return new Promise<void>((resolve) => {
+    const image = new Image()
+    let settled = false
+    let timer = 0
+
+    const done = () => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timer)
+
+      if (image.naturalWidth > 0) {
+        loadedBackgroundUrls.add(url)
+      }
+
+      resolve()
+    }
+
+    timer = window.setTimeout(done, timeout)
+
+    image.onload = () => {
+      image.decode().catch(() => undefined).finally(done)
+    }
+
+    image.onerror = done
+    image.src = url
+
+    if (image.complete) {
+      done()
+    }
+  })
+}
 
 // 从localStorage加载主题
 if (process.client) {
@@ -131,19 +183,36 @@ if (process.client) {
   if (saved && themes[saved]) {
     currentTheme.value = saved
   }
+
+  void preloadThemeBackground(themes[currentTheme.value])
 }
 
 export const useTheme = () => {
   const theme = computed(() => themes[currentTheme.value])
   
-  const setTheme = (themeName: string) => {
-    if (themes[themeName]) {
-      currentTheme.value = themeName
-      if (process.client) {
-        localStorage.setItem('mofukaze-theme', themeName)
-        applyThemeToDOM(themes[themeName])
-      }
+  const setTheme = async (themeName: string) => {
+    if (!themes[themeName] || themeName === currentTheme.value) {
+      return
     }
+
+    const requestId = ++themeRequestId
+    pendingTheme.value = themeName
+    isThemeLoading.value = true
+
+    await preloadThemeBackground(themes[themeName])
+
+    if (requestId !== themeRequestId) {
+      return
+    }
+
+    currentTheme.value = themeName
+
+    if (process.client) {
+      localStorage.setItem('mofukaze-theme', themeName)
+    }
+
+    pendingTheme.value = null
+    isThemeLoading.value = false
   }
   
   const getAvailableThemes = () => Object.values(themes)
@@ -151,45 +220,10 @@ export const useTheme = () => {
   return {
     currentTheme: readonly(currentTheme),
     theme,
+    isThemeLoading: readonly(isThemeLoading),
+    pendingTheme: readonly(pendingTheme),
     setTheme,
-    getAvailableThemes
+    getAvailableThemes,
+    preloadThemeBackground
   }
 }
-
-// 应用主题到DOM的CSS变量
-function applyThemeToDOM(theme: Theme) {
-  if (!process.client) return
-  
-  const root = document.documentElement
-  const colors = theme.colors
-  
-  root.style.setProperty('--theme-primary', colors.primary)
-  root.style.setProperty('--theme-secondary', colors.secondary)
-  root.style.setProperty('--theme-accent', colors.accent)
-  root.style.setProperty('--theme-background', colors.background)
-  root.style.setProperty('--theme-surface', colors.surface)
-  root.style.setProperty('--theme-text', colors.text)
-  root.style.setProperty('--theme-text-secondary', colors.textSecondary)
-  root.style.setProperty('--theme-blur', theme.effects.blur)
-  root.style.setProperty('--theme-shadow', theme.effects.shadow)
-  root.style.setProperty('--theme-glow', theme.effects.glow)
-  root.style.setProperty('--theme-overlay', theme.backgrounds.overlay)
-  
-  // 更新背景
-  const backgroundEl = document.getElementById('background')
-  if (backgroundEl) {
-    backgroundEl.style.background = theme.backgrounds.main
-    backgroundEl.style.backgroundSize = 'cover'
-    backgroundEl.style.backgroundPosition = 'center'
-    backgroundEl.style.backgroundRepeat = 'no-repeat'
-  }
-  
-  // 更新特效颜色
-  updateEffectColors(theme)
-}
-
-function updateEffectColors(theme: Theme) {
-  // 这里可以更新粒子效果、阴影等颜色
-  // 具体实现根据你的现有代码调整
-}
-

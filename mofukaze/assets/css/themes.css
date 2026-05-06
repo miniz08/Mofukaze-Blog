@@ -122,40 +122,52 @@
 }
 
 .theme-midnight #background::before {
-  opacity: 0.76;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(99, 102, 241, 0.34), transparent 20%),
+    radial-gradient(circle at 78% 18%, rgba(14, 165, 233, 0.24), transparent 18%),
+    radial-gradient(circle at 54% 78%, rgba(236, 72, 153, 0.18), transparent 24%),
+    var(--theme-overlay);
+  opacity: 0.86;
+  animation: midnightNebulaBreath 12s ease-in-out infinite alternate;
 }
 
 .theme-midnight #background::after {
   background-image:
-    radial-gradient(rgba(155, 160, 255, 0.66) 1px, transparent 1.8px),
-    radial-gradient(rgba(139, 92, 246, 0.42) 1.8px, transparent 2.9px),
-    radial-gradient(rgba(236, 72, 153, 0.26) 2.4px, transparent 3.9px),
-    radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 2px);
-  background-position: 0 0, 100px 180px, 40px 60px, 180px 120px;
-  background-size: 140px 140px, 280px 280px, 420px 420px, 640px 640px;
+    radial-gradient(circle, rgba(255, 255, 255, 0.96) 0 1.2px, transparent 2.2px),
+    radial-gradient(circle, rgba(125, 211, 252, 0.7) 0 1.6px, transparent 3px),
+    radial-gradient(circle, rgba(196, 181, 253, 0.52) 0 2.2px, transparent 4px),
+    radial-gradient(circle, rgba(244, 114, 182, 0.42) 0 2.8px, transparent 5.4px),
+    linear-gradient(115deg, transparent 0 45%, rgba(255, 255, 255, 0) 46.4%, rgba(255, 255, 255, 0.74) 47.4%, rgba(125, 211, 252, 0.28) 48.6%, transparent 51%);
+  background-position: 0 0, 82px 50px, 160px 110px, 240px 160px, 20px -80px;
+  background-size: 96px 96px, 170px 170px, 310px 310px, 460px 460px, 620px 420px;
+  filter: drop-shadow(0 0 7px rgba(129, 140, 248, 0.58));
   mix-blend-mode: screen;
-  opacity: 0.68;
-  animation: midnightDustOrbit 86s linear infinite, midnightPulse 5.6s ease-in-out infinite;
+  opacity: 0.88;
+  animation: midnightStarfieldSweep 42s linear infinite, midnightTwinkle 3.8s ease-in-out infinite;
 }
 
 #wrapper.theme-midnight::before {
   background-image:
-    radial-gradient(rgba(129, 140, 248, 0.2) 1.2px, transparent 2.6px),
-    radial-gradient(rgba(236, 72, 153, 0.14) 1px, transparent 2.2px);
-  background-position: 0 0, 160px 120px;
-  background-size: 240px 240px, 360px 360px;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='340' viewBox='0 0 520 340'%3E%3Cg fill='none' stroke='%23a5b4fc' stroke-opacity='.46' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M62 76 118 42 176 84 246 62 304 118 386 94'/%3E%3Cpath d='M84 238 150 194 220 226 288 178 362 214 438 166'/%3E%3Cpath d='M344 278 392 234 464 260'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.78'%3E%3Ccircle cx='62' cy='76' r='2'/%3E%3Ccircle cx='118' cy='42' r='1.7'/%3E%3Ccircle cx='176' cy='84' r='2.2'/%3E%3Ccircle cx='246' cy='62' r='1.6'/%3E%3Ccircle cx='304' cy='118' r='2.4'/%3E%3Ccircle cx='386' cy='94' r='1.8'/%3E%3Ccircle cx='84' cy='238' r='1.8'/%3E%3Ccircle cx='150' cy='194' r='2.1'/%3E%3Ccircle cx='220' cy='226' r='1.7'/%3E%3Ccircle cx='288' cy='178' r='2.3'/%3E%3Ccircle cx='362' cy='214' r='1.6'/%3E%3Ccircle cx='438' cy='166' r='2'/%3E%3Ccircle cx='344' cy='278' r='1.7'/%3E%3Ccircle cx='392' cy='234' r='2.1'/%3E%3Ccircle cx='464' cy='260' r='1.6'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle, rgba(129, 140, 248, 0.38) 0 1.6px, transparent 3px),
+    radial-gradient(circle, rgba(236, 72, 153, 0.24) 0 1.3px, transparent 2.6px);
+  background-position: 24px 34px, 0 0, 160px 120px;
+  background-size: 520px 340px, 220px 220px, 360px 360px;
+  filter: drop-shadow(0 0 8px rgba(165, 180, 252, 0.38));
   mix-blend-mode: screen;
-  opacity: 0.4;
-  animation: midnightConstellation 28s ease-in-out infinite;
+  opacity: 0.62;
+  animation: midnightConstellationPulse 18s ease-in-out infinite;
 }
 
 #wrapper.theme-midnight::after {
   background-image:
-    radial-gradient(rgba(255, 255, 255, 0.19) 1px, transparent 1.8px),
-    radial-gradient(rgba(99, 102, 241, 0.17) 1px, transparent 2px);
-  background-position: 20px 80px, 160px 120px;
-  background-size: 220px 220px, 360px 360px;
+    linear-gradient(118deg, transparent 0 42%, rgba(255, 255, 255, 0.72) 46%, rgba(129, 140, 248, 0.32) 48%, transparent 55%),
+    linear-gradient(118deg, transparent 0 47%, rgba(244, 114, 182, 0.4) 49%, rgba(125, 211, 252, 0.22) 51%, transparent 57%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 1px, transparent 2px);
+  background-position: -120px -80px, 240px -140px, 20px 80px;
+  background-size: 390px 280px, 540px 360px, 220px 220px;
+  filter: blur(0.15px) drop-shadow(0 0 10px rgba(125, 211, 252, 0.36));
   mix-blend-mode: screen;
-  opacity: 0.3;
-  animation: midnightStars 120s linear infinite reverse, midnightPulse 8s ease-in-out infinite;
+  opacity: 0.5;
+  animation: midnightMeteorDrift 16s linear infinite, midnightPulse 5.6s ease-in-out infinite;
 }

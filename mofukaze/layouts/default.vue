@@ -1,7 +1,13 @@
 <template>
-  <div id="wrapper" :class="`theme-${currentTheme}`">
+  <div id="wrapper" :class="[`theme-${currentTheme}`, { 'theme-revealing': isThemeRevealing }]">
     <!-- 背景 -->
-    <div id="background"></div>
+    <div id="background">
+      <div
+        v-if="previousBackground"
+        class="background-snapshot"
+        :style="{ background: previousBackground }"
+      ></div>
+    </div>
 
     <!-- 顶部导航 -->
     <Top class="top-global" />
@@ -32,11 +38,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { useTheme, type Theme } from '~/composables/useTheme'
+import { preloadThemeBackground, useTheme, type Theme } from '~/composables/useTheme'
 
 const { currentTheme, theme, setTheme, getAvailableThemes } = useTheme()
 const showMenu = ref(false)
 const availableThemes = ref(getAvailableThemes())
+const isThemeRevealing = ref(false)
+const previousBackground = ref('')
+const appliedBackground = ref('')
+let revealTimer = 0
 
 const toggleThemeMenu = () => {
   showMenu.value = !showMenu.value
@@ -64,6 +74,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
+  window.clearTimeout(revealTimer)
 })
 
 useVisitTracker()
@@ -77,17 +88,27 @@ useSeoMeta({
 })
 
 // 在客户端挂载时应用主题
-onMounted(() => {
+onMounted(async () => {
   if (process.client) {
     // 应用初始主题
-    applyThemeToDOM(theme.value)
+    const initialTheme = theme.value
+    await preloadThemeBackground(initialTheme)
+    if (theme.value.name !== initialTheme.name) return
+
+    applyThemeToDOM(initialTheme)
+    triggerThemeReveal()
   }
 })
 
 // 监听主题变化
-watch(theme, (newTheme) => {
+watch(theme, async (newTheme) => {
   if (process.client) {
+    const themeName = newTheme.name
+    await preloadThemeBackground(newTheme)
+    if (theme.value.name !== themeName) return
+
     applyThemeToDOM(newTheme)
+    triggerThemeReveal()
   }
 })
 
@@ -113,6 +134,20 @@ function scrollBottom() {
 }
 }
 
+function triggerThemeReveal() {
+  window.clearTimeout(revealTimer)
+  isThemeRevealing.value = false
+
+  requestAnimationFrame(() => {
+    isThemeRevealing.value = true
+
+    revealTimer = window.setTimeout(() => {
+      isThemeRevealing.value = false
+      previousBackground.value = ''
+    }, 920)
+  })
+}
+
 // 应用主题到DOM的CSS变量
 function applyThemeToDOM(theme: Theme) {
   if (!process.client) return
@@ -135,10 +170,17 @@ function applyThemeToDOM(theme: Theme) {
   // 更新背景
   const backgroundEl = document.getElementById('background')
   if (backgroundEl) {
+    if (appliedBackground.value && appliedBackground.value !== theme.backgrounds.main) {
+      previousBackground.value = appliedBackground.value
+    } else {
+      previousBackground.value = ''
+    }
+
     backgroundEl.style.background = theme.backgrounds.main
     backgroundEl.style.backgroundSize = 'cover'
     backgroundEl.style.backgroundPosition = 'center'
     backgroundEl.style.backgroundRepeat = 'no-repeat'
+    appliedBackground.value = theme.backgrounds.main
   }
   
   // 更新特效颜色

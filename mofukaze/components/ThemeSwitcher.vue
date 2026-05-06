@@ -4,9 +4,11 @@
     <button 
       @click="toggleThemeMenu"
       class="theme-toggle-btn"
+      :class="{ 'is-loading': isThemeLoading }"
+      :disabled="isThemeLoading"
       :title="`当前主题: ${theme.label}`"
     >
-      <i class="fas fa-palette"></i>
+      <i :class="isThemeLoading ? 'fas fa-spinner fa-spin' : 'fas fa-palette'"></i>
       <span class="theme-label">{{ theme.label }}</span>
     </button>
     
@@ -51,7 +53,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useTheme } from '~/composables/useTheme'
 
-const { currentTheme, theme, setTheme, getAvailableThemes } = useTheme()
+const { currentTheme, theme, setTheme, getAvailableThemes, isThemeLoading } = useTheme()
 const showMenu = ref(false)
 const availableThemes = ref(getAvailableThemes())
 
@@ -59,9 +61,11 @@ const toggleThemeMenu = () => {
   showMenu.value = !showMenu.value
 }
 
-const selectTheme = (themeName: string) => {
-  setTheme(themeName)
+const selectTheme = async (themeName: string) => {
+  if (isThemeLoading.value) return
+
   showMenu.value = false
+  await setTheme(themeName)
 }
 
 const closeThemeMenu = () => {
@@ -112,6 +116,15 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn:disabled {
+  cursor: wait;
+}
+
+.theme-toggle-btn.is-loading {
+  box-shadow: 0 0 18px var(--theme-glow);
+  opacity: 0.88;
 }
 
 .theme-label {
@@ -191,8 +204,6 @@ onUnmounted(() => {
   transform: translateY(-10px) scale(0.95);
 }
 </style>
-
-
 
 
 
