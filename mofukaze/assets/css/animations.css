@@ -212,40 +212,24 @@
   }
 }
 
-@keyframes midnightMeteorFall {
+@keyframes midnightMeteorShoot {
   0% {
-    background-position: 78% -28%, 24% -34%, 102% 10%, 20px 80px;
     opacity: 0;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) rotate(-22deg) scaleX(0.82);
   }
-  8% {
-    opacity: 0.9;
+  4% {
+    opacity: 0.96;
   }
-  22% {
-    background-position: 44% 54%, 24% -34%, 102% 10%, 20px 80px;
+  15% {
+    opacity: 0.88;
+  }
+  30% {
     opacity: 0;
+    transform: translate3d(-78vw, 44vh, 0) rotate(-22deg) scaleX(1);
   }
-  34% {
-    background-position: 78% -28%, 16% -26%, 102% 10%, 20px 80px;
+  100% {
     opacity: 0;
-  }
-  43% {
-    opacity: 0.72;
-  }
-  58% {
-    background-position: 78% -28%, -12% 58%, 102% 10%, 20px 80px;
-    opacity: 0;
-  }
-  70% {
-    background-position: 78% -28%, 24% -34%, 96% -18%, 20px 80px;
-    opacity: 0;
-  }
-  79% {
-    opacity: 0.78;
-  }
-  96%, 100% {
-    background-position: 78% -28%, 24% -34%, 54% 92%, 20px 80px;
-    opacity: 0;
+    transform: translate3d(-78vw, 44vh, 0) rotate(-22deg) scaleX(1);
   }
 }
 
