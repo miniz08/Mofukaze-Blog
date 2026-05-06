@@ -181,75 +181,71 @@
   }
 }
 
-@keyframes midnightStars {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: 1200px 800px, 600px 1600px, 1800px 1200px; }
-}
-
-@keyframes midnightPulse {
-  0%, 100% { opacity: 0.42; }
-  50% { opacity: 0.72; }
-}
-
-@keyframes midnightNebulaBreath {
-  0% {
-    background-position: 0 0, 0 0, 0 0, 0 0;
-    filter: saturate(108%);
-    opacity: 0.7;
-  }
-  100% {
-    background-position: 6% -4%, -5% 5%, 4% 7%, 0 0;
-    filter: saturate(132%);
-    opacity: 0.92;
-  }
-}
-
-@keyframes midnightStarfieldSweep {
-  0% {
-    background-position: 0 0, 82px 50px, 160px 110px, 240px 160px, 20px -80px;
-    transform: translate3d(-1%, -1%, 0);
-  }
-  100% {
-    background-position: -520px 760px, 620px -480px, -680px 520px, 760px 620px, 820px 420px;
-    transform: translate3d(1%, 1%, 0);
-  }
-}
-
-@keyframes midnightTwinkle {
+@keyframes midnightStarTwinkle {
   0%, 100% {
-    filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.34));
-    opacity: 0.64;
+    filter: drop-shadow(0 0 4px rgba(191, 219, 254, 0.22));
+    opacity: 0.66;
   }
-  45% {
-    filter: drop-shadow(0 0 11px rgba(165, 180, 252, 0.72));
-    opacity: 0.96;
+  44% {
+    filter: drop-shadow(0 0 8px rgba(219, 234, 254, 0.46));
+    opacity: 0.88;
   }
   72% {
-    opacity: 0.78;
+    opacity: 0.74;
   }
 }
 
-@keyframes midnightConstellationPulse {
-  0%, 100% {
-    background-position: 24px 34px, 0 0, 160px 120px;
-    filter: drop-shadow(0 0 5px rgba(165, 180, 252, 0.24));
-    opacity: 0.36;
+@keyframes midnightQuietTwinkle {
+  0%, 100% { opacity: 0.38; }
+  48% { opacity: 0.62; }
+  78% { opacity: 0.46; }
+}
+
+@keyframes midnightStarDrift {
+  from {
+    background-position: 36px 22px, 120px 88px, 260px 150px;
+    transform: translate3d(-0.5%, -0.5%, 0);
   }
-  50% {
-    background-position: -120px 92px, 380px -240px, -320px 460px;
-    filter: drop-shadow(0 0 12px rgba(165, 180, 252, 0.62));
+  to {
+    background-position: -420px 520px, 560px -380px, -260px 460px;
+    transform: translate3d(0.5%, 0.5%, 0);
+  }
+}
+
+@keyframes midnightMeteorFall {
+  0% {
+    background-position: 78% -28%, 24% -34%, 102% 10%, 20px 80px;
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  8% {
+    opacity: 0.9;
+  }
+  22% {
+    background-position: 44% 54%, 24% -34%, 102% 10%, 20px 80px;
+    opacity: 0;
+  }
+  34% {
+    background-position: 78% -28%, 16% -26%, 102% 10%, 20px 80px;
+    opacity: 0;
+  }
+  43% {
     opacity: 0.72;
   }
-}
-
-@keyframes midnightMeteorDrift {
-  0% {
-    background-position: -160px -90px, 260px -160px, 20px 80px;
-    transform: translate3d(-1%, -1%, 0);
+  58% {
+    background-position: 78% -28%, -12% 58%, 102% 10%, 20px 80px;
+    opacity: 0;
   }
-  100% {
-    background-position: 580px 620px, -520px 520px, 420px -260px;
-    transform: translate3d(1%, 1%, 0);
+  70% {
+    background-position: 78% -28%, 24% -34%, 96% -18%, 20px 80px;
+    opacity: 0;
+  }
+  79% {
+    opacity: 0.78;
+  }
+  96%, 100% {
+    background-position: 78% -28%, 24% -34%, 54% 92%, 20px 80px;
+    opacity: 0;
   }
 }
 
@@ -283,32 +279,6 @@
     background-position: 520px 120px, -420px 260px;
     opacity: 0.54;
     transform: skewY(4deg) translateY(3%);
-  }
-}
-
-@keyframes midnightDustOrbit {
-  0% {
-    background-position: 0 0, 100px 180px, 40px 60px, 0 0;
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    opacity: 0.78;
-    transform: rotate(0.6deg) scale(1.01);
-  }
-  100% {
-    background-position: -580px 620px, 780px -500px, 420px 980px, 900px 280px;
-    transform: rotate(0deg) scale(1);
-  }
-}
-
-@keyframes midnightConstellation {
-  0%, 100% {
-    background-position: 0 0, 160px 120px;
-    opacity: 0.28;
-  }
-  50% {
-    background-position: 380px -240px, -320px 460px;
-    opacity: 0.62;
   }
 }
 
