@@ -11,7 +11,7 @@ export const collectionAccessConfig: Record<string, AccessLevel> = {
   getCollectionInfo: 'public',
   editCollection: 'public',
   deleteCollection: 'public',
-  uploadImage: 'public',
+  uploadImage: 'private',
 };
 
 // 将所有合集接口聚合在一个文件中导出，便于统一管理和后续按 public/private 分类

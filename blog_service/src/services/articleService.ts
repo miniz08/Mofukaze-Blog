@@ -1,9 +1,4 @@
 import { prisma } from '../../lib/prisma.js';
-import { writeFile, mkdir } from 'fs/promises';
-import { createWriteStream } from 'fs';
-import { join } from 'path';
-import { Readable } from 'stream';
-import { createHash } from 'crypto';
 
 export class ArticleService {
   /**
@@ -191,109 +186,6 @@ static async updateArticle(
     return await prisma.article.deleteMany({
       where: { tag },
     });
-  }
-  /**
-   * 上传图片（负责：计算SHA256 + 生成目录结构 + 文件写入 + 生成数据库路径）
-   * @param fileStream - 文件流（Readable stream）
-   * @param title - 文件名标题（不再用于文件名）
-   */
-  static async uploadImage(fileStream: Readable, title: string): Promise<{ fileUrl: string }> {
-    console.log("🔵 [Service] uploadImage 调用开始啦~");
-    console.log("🔵 [Service] fileStream 类型:", fileStream.constructor.name);
-    console.log("🔵 [Service] fileStream readable:", fileStream.readable);
-    console.log("🔵 [Service] title:", title);
-
-    if (!fileStream || !title) {
-      console.error("❌ [Service] 缺少 fileStream 或 title");
-      throw new Error('Missing fileStream or title');
-    }
-
-    // -----------------------------
-    // ① 读取文件流并计算SHA256哈希值
-    // -----------------------------
-    const hash = createHash('sha256');
-    const chunks: Buffer[] = [];
-    let totalSize = 0;
-
-    console.log("🔵 [Service] 开始读取文件流并计算SHA256...");
-
-    await new Promise<void>((resolve, reject) => {
-      fileStream.on('data', (chunk: Buffer) => {
-        chunks.push(chunk);
-        hash.update(chunk);
-        totalSize += chunk.length;
-        console.log(`📦 [Service] 读取数据块，大小: ${chunk.length}, 累计: ${totalSize}`);
-      });
-
-      fileStream.on('end', () => {
-        console.log(`🟢 [Service] 文件读取完成，总大小: ${totalSize}`);
-        resolve();
-      });
-
-      fileStream.on('error', (err) => {
-        console.error("❌ [Service] 读取文件流错误:", err);
-        reject(err);
-      });
-    });
-
-    // 生成SHA256哈希值
-    const hashValue = hash.digest('hex');
-    console.log(`🟣 [Service] 生成的SHA256哈希值: ${hashValue}`);
-
-    // -----------------------------
-    // ② 根据哈希值生成目录结构和文件名
-    // -----------------------------
-    const dir1 = hashValue.substring(0, 2); // 前两个字符
-    const dir2 = hashValue.substring(2, 4); // 第三四个字符
-    const fileName = `${hashValue}`; // 使用哈希值作为文件名
-
-    console.log(`🟣 [Service] 生成的目录结构: ${dir1}/${dir2}/${fileName}`);
-
-    // -----------------------------
-    // ③ 确定上传目录（环境配置层）
-    // -----------------------------
-    const uploadDir = process.env.UPLOAD_IMG_TEXT_DIR;
-    const headDir = process.env.UPLOAD_URL;
-
-    console.log("🔵 [ENV] UPLOAD_IMG_TEXT_DIR =", uploadDir);
-    console.log("🔵 [ENV] UPLOAD_URL =", headDir);
-
-    if (!uploadDir) {
-      console.error("❌ 环境变量 UPLOAD_IMG_TEXT_DIR 未设置");
-      throw new Error('UPLOAD_IMG_TEXT_DIR environment variable is not set');
-    }
-    if (!headDir) {
-      console.error("❌ 环境变量 UPLOAD_URL 未设置");
-      throw new Error('UPLOAD_URL environment variable is not set');
-    }
-
-    // 创建完整的目录路径
-    const fullDirPath = join(uploadDir, dir1, dir2);
-    await mkdir(fullDirPath, { recursive: true });
-    console.log(`🟢 [mkdir] 确保目录存在: ${fullDirPath}`);
-
-    // -----------------------------
-    // ④ 写入文件（⭐ 物理存储层）
-    // -----------------------------
-    const filePath = join(fullDirPath, fileName);
-    console.log(`🟡 [writeFile] 将写入文件: ${filePath}`);
-
-    // 将之前读取的数据写入文件
-    const fileBuffer = Buffer.concat(chunks);
-    await writeFile(filePath, fileBuffer);
-    console.log("🟢 [Service] 文件写入完成!");
-
-    // -----------------------------
-    // ⑤ 生成前端 & 数据库使用的 URL（⭐ 路径保存层）
-    // -----------------------------
-    const fileUrl = `${headDir}/img/text/${dir1}/${dir2}/${fileName}`;
-    console.log(`💚 [fileUrl] 生成图片访问地址: ${fileUrl}`);
-
-    console.log("🟦 [uploadImage] 全流程结束~");
-
-    return {
-      fileUrl,  // 给数据库保存 & 前端渲染
-    };
   }
 
 }

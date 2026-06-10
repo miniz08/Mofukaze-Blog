@@ -58,6 +58,8 @@ services:
       UPLOAD_URL: "http://mofukaze.me"
       UPLOAD_IMG_TEXT_DIR: "/media/img/text"
       UPLOAD_IMG_COVER_DIR: "/media/img/cover"
+      UPLOAD_VIDEO_DIR: "/resources/video"
+      UPLOAD_MUSIC_DIR: "/resources/music"
     networks:
       - app-network
     volumes:

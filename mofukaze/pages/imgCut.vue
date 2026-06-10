@@ -1,482 +1,531 @@
 <template>
-  <div>
-    <!-- 裁剪图片功能 -->
-    <el-button @click="dialogVisible = true">添加封面信息</el-button>
-    <el-dialog 
+  <section class="collection-editor-page">
+    <header class="collection-editor-header">
+      <div>
+        <p>Collection Editor</p>
+        <h1>添加收藏</h1>
+      </div>
+      <button type="button" class="primary-action" @click="dialogVisible = true">
+        选择封面
+      </button>
+    </header>
+
+    <div class="collection-form">
+      <div class="meta-grid">
+        <label>
+          <span>标题</span>
+          <input v-model.trim="title" type="text" placeholder="请输入标题" />
+        </label>
+
+        <label>
+          <span>标签</span>
+          <el-select v-model="tag" placeholder="选择收藏类型" class="tag-select">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </label>
+      </div>
+
+      <div class="cover-strip" :class="{ empty: !coverPreview }">
+        <img v-if="coverPreview" :src="coverPreview" alt="收藏封面预览" />
+        <div>
+          <span>封面</span>
+          <strong>{{ coverPreview ? '已裁剪' : '尚未选择' }}</strong>
+        </div>
+        <button type="button" @click="dialogVisible = true">
+          {{ coverPreview ? '重新裁剪' : '添加封面' }}
+        </button>
+      </div>
+
+      <Editor ref="editorRef" v-model="content" />
+
+      <div class="submit-container">
+        <button
+          type="button"
+          class="submit-button"
+          :disabled="isSubmitting"
+          @click="submitContent"
+        >
+          {{ isSubmitting ? '提交中...' : '提交内容' }}
+        </button>
+      </div>
+    </div>
+
+    <el-dialog
       v-model="dialogVisible"
-      id="Box"
-      @close="resetCropper">
-      <h3>预览</h3>
-      <div class="before"></div>
-      <el-button @click="sureSava">确认裁剪</el-button>
-      <el-button @click="resetCropper" type="warning">重置</el-button>
-      <div class="box">
-        <div class="box_1">
-          <input type="file" @change="onFileChange" accept="image/*" />
-          <img v-if="imageSrc" :src="imageSrc" ref="image" @load="initCropper" />
+      title="封面裁剪"
+      width="min(920px, 92vw)"
+      @closed="resetCropper"
+    >
+      <div class="cropper-panel">
+        <div class="cropper-toolbar">
+          <button
+            v-for="ratio in cropRatios"
+            :key="ratio.label"
+            type="button"
+            :class="{ active: selectedRatio.label === ratio.label }"
+            @click="selectRatio(ratio)"
+          >
+            {{ ratio.label }}
+          </button>
+          <input type="file" accept="image/*" @change="onFileChange" />
+        </div>
+
+        <div class="cropper-layout">
+          <div class="cropper-source">
+            <img v-if="imageSrc" ref="imageRef" :src="imageSrc" alt="待裁剪图片" @load="initCropper" />
+            <div v-else class="cropper-empty">请选择图片</div>
+          </div>
+
+          <div class="cropper-preview-wrap">
+            <span>预览</span>
+            <div
+              class="cropper-preview"
+              :style="{ aspectRatio: `${selectedRatio.width} / ${selectedRatio.height}` }"
+            ></div>
+          </div>
+        </div>
+
+        <div class="cropper-actions">
+          <button type="button" @click="resetCropper">重置</button>
+          <button type="button" class="primary-action" @click="confirmCrop">
+            确认裁剪
+          </button>
         </div>
       </div>
     </el-dialog>
-      <!-- Display cropped image on the main page -->
-  <div v-if="afterImg" class="cropped-image-container">
-    <h3>裁剪后的封面</h3>
-    <img :src="afterImg" alt="Cropped Image" />
-  </div>
-
-    <!-- 文章编辑功能 -->
-    <div class="editor-container">
-      <div class="input-group">
-        <label for="title">标题:</label>
-        <input id="title" v-model="title" type="text" placeholder="请输入文章标题" />
-      </div>
-
-      <div class="input-group">
-        <label for="tag">标签:</label>
-        <el-select
-          v-model="tag"
-          placeholder="选择文章类型"
-          style="width: 240px"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </div>
-
-      <div v-if="editor" class="editor-toolbar">
-        <button
-          @click="editor.chain().focus().toggleBold().run()"
-          :disabled="!editor.can().chain().focus().toggleBold().run()"
-          :class="{ 'is-active': editor.isActive('bold') }"
-        >
-          加粗
-        </button>
-        <button
-          @click="editor.chain().focus().toggleItalic().run()"
-          :disabled="!editor.can().chain().focus().toggleItalic().run()"
-          :class="{ 'is-active': editor.isActive('italic') }"
-        >
-          斜体
-        </button>
-        <button
-          @click="editor.chain().focus().toggleStrike().run()"
-          :disabled="!editor.can().chain().focus().toggleStrike().run()"
-          :class="{ 'is-active': editor.isActive('strike') }"
-        >
-          删除线
-        </button>
-        <button
-          @click="editor.chain().focus().toggleCode().run()"
-          :disabled="!editor.can().chain().focus().toggleCode().run()"
-          :class="{ 'is-active': editor.isActive('code') }"
-        >
-          代码
-        </button>
-        <button @click="editor.chain().focus().unsetAllMarks().run()">
-          清除格式
-        </button>
-        <button @click="editor.chain().focus().clearNodes().run()">
-          清除节点
-        </button>
-        <button
-          @click="editor.chain().focus().setParagraph().run()"
-          :class="{ 'is-active': editor.isActive('paragraph') }"
-        >
-          段落
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
-        >
-          标题1
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-        >
-          标题2
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
-        >
-          标题3
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
-        >
-          标题4
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }"
-        >
-          标题5
-        </button>
-        <button
-          @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-          :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }"
-        >
-          标题6
-        </button>
-        <button
-          @click="editor.chain().focus().toggleBulletList().run()"
-          :class="{ 'is-active': editor.isActive('bulletList') }"
-        >
-          无序列表
-        </button>
-        <button
-          @click="editor.chain().focus().toggleOrderedList().run()"
-          :class="{ 'is-active': editor.isActive('orderedList') }"
-        >
-          有序列表
-        </button>
-        <button
-          @click="editor.chain().focus().toggleCodeBlock().run()"
-          :class="{ 'is-active': editor.isActive('codeBlock') }"
-        >
-          代码块
-        </button>
-        <button
-          @click="editor.chain().focus().toggleBlockquote().run()"
-          :class="{ 'is-active': editor.isActive('blockquote') }"
-        >
-          引用
-        </button>
-        <button @click="editor.chain().focus().setHorizontalRule().run()">
-          水平线
-        </button>
-        <button @click="editor.chain().focus().setHardBreak().run()">
-          换行
-        </button>
-        <button
-          @click="editor.chain().focus().undo().run()"
-          :disabled="!editor.can().chain().focus().undo().run()"
-        >
-          撤销
-        </button>
-        <button
-          @click="editor.chain().focus().redo().run()"
-          :disabled="!editor.can().chain().focus().redo().run()"
-        >
-          重做
-        </button>
-        <button @click="addImage">
-          添加图片
-        </button>
-      </div>
-      <EditorContent class="editor-content" :editor="editor" />
-
-      <div class="submit-container">
-        <button @click="submitContent" class="submit-button">提交内容</button>
-      </div>
-    </div>
-  </div>
+  </section>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
-import Cropper from "cropperjs";
-import 'cropperjs/dist/cropper.css';
-import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import Cropper from 'cropperjs'
+import 'cropperjs/dist/cropper.css'
+import Editor from '~/components/editor/editor.vue'
 
-const editor = ref(useEditor({
-  extensions: [StarterKit, Image],
-  content: "<p>God Knows</p>",
-}))
+type CropRatio = {
+  label: string
+  value: number
+  width: number
+  height: number
+}
+
+const cropRatios: CropRatio[] = [
+  { label: '3:4', value: 3 / 4, width: 900, height: 1200 },
+  { label: '1:1', value: 1, width: 1000, height: 1000 },
+  { label: '16:9', value: 16 / 9, width: 1280, height: 720 },
+]
+
+const options = [
+  { value: '动漫', label: '动漫' },
+  { value: '游戏', label: '游戏' },
+  { value: '电影', label: '电影' },
+  { value: '音乐', label: '音乐' },
+]
+
+const router = useRouter()
+const admin = useAdmin()
+const { uploadResource } = useResourceUpload()
 
 const title = ref('')
 const tag = ref('')
-const image = ref(null);
-const myCropper = ref(null);
-const afterImg = ref(''); 
-const imageSrc = ref(null);
+const content = ref('<p>God Knows</p>')
+const editorRef = ref<InstanceType<typeof Editor> | null>(null)
+const imageRef = ref<HTMLImageElement | null>(null)
+const cropper = ref<Cropper | null>(null)
+const imageSrc = ref('')
+const coverPreview = ref('')
+const coverBlob = ref<Blob | null>(null)
 const dialogVisible = ref(false)
+const isSubmitting = ref(false)
+const selectedRatio = ref<CropRatio>(cropRatios[0])
+const sourceObjectUrl = ref('')
+const previewObjectUrl = ref('')
 
-
-onBeforeUnmount(() => {
-  editor.value.destroy()
+const coverFilename = computed(() => {
+  const safeTitle = title.value.trim().replace(/[<>:"/\\|?*\x00-\x1F]/g, '_') || 'collection-cover'
+  return `${safeTitle}.jpg`
 })
 
-// 初始化 Cropper 实例
-const initCropper = () => {
-  if (image.value) {
-    myCropper.value = new Cropper(image.value, {
-      aspectRatio: 1,
-      viewMode: 3,
-      dragMode: 'move',
-      background: true,
-      preview: '.before',
-      autoCropArea: 1,
-      zoomOnWheel: true,
-      center: true,
-      cropBoxResizable: false,
-      cropBoxMovable: true,
-    });
-  } else {
-    console.error("Image reference is null, Cropper initialization failed.");
-  }
-};
+watch(tag, (nextTag) => {
+  if (coverBlob.value) return
+  selectedRatio.value = nextTag === '音乐' ? cropRatios[1] : cropRatios[0]
+  cropper.value?.setAspectRatio(selectedRatio.value.value)
+})
 
-// 确认裁剪并保存预览（不立即存储）
-const sureSava = () => {
-  if (myCropper.value) {
-    afterImg.value = myCropper.value.getCroppedCanvas({
-      width: 200,
-      height: 200,
-      imageSmoothingQuality: 'high'
-    }).toDataURL('image/jpeg');
-    dialogVisible.value = false;
-  } else {
-    console.error("Cropper instance is not initialized.");
-  }
-};
-
-// 重置 Cropper
-const resetCropper = () => {
-  if (myCropper.value) {
-    myCropper.value.destroy();
-    myCropper.value = null;
-    imageSrc.value = null;
-  }
-};
-
-// 上传图片时触发的事件
-const onFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      imageSrc.value = event.target.result;
-      onMounted(() => {
-        initCropper();
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-// 添加图片到编辑器
-function addImage() {
-  const url = window.prompt('请输入图片URL')
-  if (url) {
-    editor.value.chain().focus().setImage({ src: url }).run()
-  }
+function revokeSourceUrl() {
+  if (sourceObjectUrl.value) URL.revokeObjectURL(sourceObjectUrl.value)
+  sourceObjectUrl.value = ''
 }
 
+function revokePreviewUrl() {
+  if (previewObjectUrl.value) URL.revokeObjectURL(previewObjectUrl.value)
+  previewObjectUrl.value = ''
+}
 
-// 确保 submitContent 在 uploadImage 之后被调用
-const uploadImage = async (image, title) => {
-  try {
-    const response = await fetch('/api/posts/collection/uploadImage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ image, title }),
-    });
+function initCropper() {
+  if (!imageRef.value) return
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response not OK:', errorText);
-      throw new Error('Image upload failed: ' + errorText);
-    }
+  cropper.value?.destroy()
+  cropper.value = new Cropper(imageRef.value, {
+    aspectRatio: selectedRatio.value.value,
+    viewMode: 2,
+    dragMode: 'move',
+    autoCropArea: 0.92,
+    background: false,
+    center: true,
+    preview: '.cropper-preview',
+    responsive: true,
+    checkOrientation: true,
+  })
+}
 
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error('Error during image upload:', error);
-    throw error;
+function selectRatio(ratio: CropRatio) {
+  selectedRatio.value = ratio
+  cropper.value?.setAspectRatio(ratio.value)
+}
+
+function onFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  revokeSourceUrl()
+  sourceObjectUrl.value = URL.createObjectURL(file)
+  imageSrc.value = sourceObjectUrl.value
+  nextTick(initCropper)
+}
+
+async function confirmCrop() {
+  if (!cropper.value) {
+    alert('请先选择封面图片')
+    return
   }
-};
+
+  const canvas = cropper.value.getCroppedCanvas({
+    width: selectedRatio.value.width,
+    height: selectedRatio.value.height,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: 'high',
+  })
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve, 'image/jpeg', 0.92)
+  })
+
+  if (!blob) {
+    alert('封面裁剪失败，请换一张图片试试')
+    return
+  }
+
+  revokePreviewUrl()
+  coverBlob.value = blob
+  previewObjectUrl.value = URL.createObjectURL(blob)
+  coverPreview.value = previewObjectUrl.value
+  dialogVisible.value = false
+}
+
+function resetCropper() {
+  cropper.value?.destroy()
+  cropper.value = null
+  imageSrc.value = ''
+  revokeSourceUrl()
+}
 
 async function submitContent() {
-  const content = editor.value.getHTML();
-  let imageUrl = '';
+  const htmlContent = editorRef.value?.getHTML() || content.value
 
-  try {
-    imageUrl = await uploadImage(afterImg.value, title.value); // 在提交时上传图片
-  } catch (error) {
-    console.error('图片上传失败', error);
-    alert('图片上传失败，请重试');
-    return;
+  if (!title.value || !tag.value) {
+    alert('标题和标签不能为空')
+    return
   }
 
-  // 这里是提交内容的逻辑
+  if (!coverBlob.value) {
+    alert('请先选择并裁剪封面')
+    return
+  }
+
+  if (/blob:/.test(htmlContent)) {
+    alert('有资源还在上传中，请稍等一下')
+    return
+  }
+
+  isSubmitting.value = true
   try {
+    const imageUrl = await uploadResource(coverBlob.value, 'collection-cover', {
+      title: title.value,
+      filename: coverFilename.value,
+    })
+
     const response = await fetch('/api/posts/collection/submitCollection', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...admin.getAuthHeader(),
       },
-      body: JSON.stringify({ title: title.value, content, tag: tag.value, imageUrl:imageUrl.filePath }),
-    });
+      body: JSON.stringify({
+        title: title.value,
+        content: htmlContent,
+        tag: tag.value,
+        imageUrl,
+      }),
+    })
 
-    const result = await response.json();
-    if (result.status === 'success') {
-      alert('提交成功');
-    } else {
-      console.error('提交失败:', result.message);
+    const result = await response.json()
+    if (result.status !== 'success') {
+      throw new Error(result.message || '提交失败')
     }
-  } catch (error) {
-    console.error('提交内容失败', error);
+
+    alert('提交成功')
+    router.push('/collection')
+  } catch (error: any) {
+    console.error('提交内容失败', error)
+    alert(error?.message || '提交失败，请重试')
+  } finally {
+    isSubmitting.value = false
   }
 }
 
-
-const options = [
-  {
-    value: '动漫',
-    label: '动漫',
-  },
-  {
-    value: '游戏',
-    label: '游戏',
-  },
-  {
-    value: '电影',
-    label: '电影',
-  },
-  {
-    value: '音乐',
-    label: '音乐',
-  },
-]
-
-const router = useRouter()
+onBeforeUnmount(() => {
+  resetCropper()
+  revokePreviewUrl()
+})
 </script>
 
-
 <style scoped>
-.cropped-image-container {
-  margin-top: 20px;
-}
-
-.cropped-image-container img {
-  border: 1px solid #ddd;
-  padding: 5px;
-  background-color: #f9f9f9;
-}
-#Box {
-  border: 1px silver solid;
-  padding: 20px;
-  margin-top: 20px;
-  border-radius: 5px;
-  height: 800px;
-}
-
-.before {
-  width: 150px;
-  height: 150px;
-  position: relative;
-  left: 150px;
-  overflow: hidden;
-}
-
-.box {
+.collection-editor-page {
+  color: var(--theme-text);
   display: flex;
-  column-gap: 6rem;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-  div {
-    flex: 1;
-    height: 500px;
-    background: #ccc;
-    img {
-      display: block;
-      max-width: 100%;
-      max-height: 100%;
-    }
-  }
+  flex-direction: column;
+  gap: 20px;
 }
 
-.editor-container {
+.collection-editor-header {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.collection-editor-header p,
+.cover-strip span,
+.cropper-preview-wrap span {
+  color: var(--theme-accent);
+  font-size: 13px;
+  letter-spacing: 0;
+  margin: 0 0 4px;
+}
+
+.collection-editor-header h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  margin: 0;
+}
+
+.collection-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.input-group {
+.meta-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+}
+
+.meta-grid label {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
-.input-group label {
-  margin-bottom: 4px;
-  font-weight: bold;
+.meta-grid input,
+:deep(.tag-select .el-select__wrapper) {
+  background: color-mix(in srgb, var(--theme-surface) 70%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--theme-text);
+  min-height: 42px;
 }
 
-.input-group input,
-.input-group select {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.meta-grid input {
+  box-sizing: border-box;
+  font: inherit;
+  padding: 10px 12px;
 }
 
-.editor-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 8px;
+.tag-select {
+  width: 100%;
 }
 
-.editor-toolbar button {
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f5f5f5;
+.cover-strip {
+  align-items: center;
+  background: color-mix(in srgb, var(--theme-surface) 68%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 74px minmax(0, 1fr) auto;
+  min-height: 90px;
+  padding: 10px;
+}
+
+.cover-strip.empty {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.cover-strip img {
+  aspect-ratio: 3 / 4;
+  border-radius: 6px;
+  height: 74px;
+  object-fit: cover;
+  width: 74px;
+}
+
+.cover-strip strong {
+  display: block;
+  font-size: 18px;
+}
+
+button {
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-family: 喵字摄影体;
+  font: inherit;
 }
 
-.editor-toolbar button.is-active {
-  background-color: #007bff;
-  color: #fff;
+.primary-action,
+.submit-button,
+.cover-strip button,
+.cropper-toolbar button,
+.cropper-actions button {
+  background: color-mix(in srgb, var(--theme-accent) 28%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--theme-text);
+  padding: 10px 14px;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.editor-toolbar button:disabled {
-  background-color: #e0e0e0;
-  cursor: not-allowed;
-}
-
-.editor-toolbar button:not(:disabled):hover {
-  background-color: #e0e0e0;
-}
-
-.editor-content {
-  border: 1px solid #ccc;
-  padding: 8px;
-  border-radius: 4px;
-  min-height: 200px;
-  background-color: #fff;
+.primary-action:hover,
+.submit-button:hover:not(:disabled),
+.cover-strip button:hover,
+.cropper-toolbar button:hover,
+.cropper-toolbar button.active,
+.cropper-actions button:hover {
+  background: color-mix(in srgb, var(--theme-accent) 42%, transparent);
+  box-shadow: 0 8px 22px var(--theme-shadow);
+  transform: translateY(-1px);
 }
 
 .submit-container {
   display: flex;
+  justify-content: flex-end;
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cropper-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cropper-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cropper-toolbar input {
+  color: var(--theme-text);
+}
+
+.cropper-layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  min-height: 420px;
+}
+
+.cropper-source {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  display: flex;
   justify-content: center;
-  margin-top: 16px;
+  overflow: hidden;
 }
 
-.submit-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.cropper-source img {
+  display: block;
+  max-height: 420px;
+  max-width: 100%;
 }
 
-.submit-button:hover {
-  background-color: #0056b3;
+.cropper-empty {
+  color: var(--theme-text-secondary);
+}
+
+.cropper-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cropper-preview {
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 160px;
+}
+
+.cropper-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+:deep(.el-dialog) {
+  background: color-mix(in srgb, var(--theme-surface) 88%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: var(--theme-text);
+  backdrop-filter: var(--theme-blur) saturate(145%);
+}
+
+:deep(.el-dialog__title),
+:deep(.el-dialog__body) {
+  color: var(--theme-text);
+}
+
+@media (max-width: 760px) {
+  .collection-editor-header,
+  .meta-grid,
+  .cropper-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-editor-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cover-strip,
+  .cover-strip.empty {
+    grid-template-columns: 1fr;
+  }
+
+  .cropper-preview {
+    width: 100%;
+  }
 }
 </style>

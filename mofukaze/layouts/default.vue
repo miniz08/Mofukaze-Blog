@@ -54,6 +54,7 @@
     <button @click="scrollBottom" class="fixed-button" id="back-to-bottom">
       回到底部
     </button>
+    <BackgroundMusic />
   </div>
 </template>
 

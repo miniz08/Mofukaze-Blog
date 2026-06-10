@@ -50,7 +50,8 @@ export default defineNuxtConfig({
   // ✨✨✨ 关键：Nuxt Runtime Config（TS/Vue 模板会用到）
   runtimeConfig: {
     public: {
-      cdn: process.env.CDN || 'http://mofukaze.me'
+      cdn: process.env.CDN || 'http://mofukaze.me',
+      musicBase: process.env.MUSIC_BASE || `${process.env.CDN || 'http://mofukaze.me'}/music`
     }
   }
 })

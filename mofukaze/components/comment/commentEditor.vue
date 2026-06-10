@@ -165,6 +165,7 @@ const editor = ref(useEditor({
   content: "<p>God Knows</p>",
 }))
 const fontSize = ref(16)
+const { uploadDataUrl } = useResourceUpload()
   const comments = ref<any[]>([]); // 评论列表
   const commentName = ref('');
   const commentContent = ref('');
@@ -274,25 +275,7 @@ async function addImage() {
 }
 
 async function uploadImage(image: string, title: string) {
-  try {
-    const res = await fetch('/api/posts/article/uploadImage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image, title })
-    })
-    if (!res.ok) throw new Error(await res.text())
-    const result = await res.json()
-    if (result.status === 'success' && result.fileUrl)
-    {
-      return result.fileUrl;
-    }
-    else {
-      throw new Error('图片上传失败')
-    }
-  } catch (error) {
-    console.error(error)
-    throw error
-  }
+  return uploadDataUrl(image, 'article-image', { title, filename: `${title}.jpg` })
 }
   </script>
   

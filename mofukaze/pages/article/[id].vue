@@ -72,6 +72,7 @@
               :style="commentIndent(comment.depth)"
             >
               <div class="comment-meta">
+                <span class="comment-avatar">{{ commentInitial(comment.name) }}</span>
                 <div class="comment-author">
                   <a
                     v-if="normalizeHomepage(comment.homepage)"
@@ -84,7 +85,7 @@
                   </a>
                   <strong v-else>{{ comment.name }}</strong>
                 </div>
-                <span>{{ formatDate(comment.posttime) }}</span>
+                <span class="comment-date">{{ formatDate(comment.posttime) }}</span>
               </div>
 
               <p>{{ comment.content }}</p>
@@ -275,6 +276,10 @@ const normalizeHomepage = (value?: string | null) => {
 const commentIndent = (depth: number) => ({
   '--comment-depth': String(Math.min(depth, 5)),
 })
+
+const commentInitial = (name: string) => {
+  return String(name || '?').trim().slice(0, 1).toUpperCase() || '?'
+}
 
 const normalizeArticle = (payload: unknown): Article | null => {
   if (Array.isArray(payload)) return payload[0] || null
@@ -521,9 +526,9 @@ useSeoMeta({
 .article-card,
 .comment-section,
 .toc-panel {
-  backdrop-filter: var(--theme-blur) saturate(145%);
-  background: color-mix(in srgb, var(--theme-surface) 74%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: var(--theme-blur) saturate(135%);
+  background: color-mix(in srgb, var(--theme-surface) 58%, var(--theme-background));
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   box-shadow: 0 12px 32px var(--theme-shadow);
 }
@@ -531,6 +536,18 @@ useSeoMeta({
 .article-card {
   overflow: hidden;
   padding: clamp(22px, 3vw, 34px);
+  position: relative;
+}
+
+.article-card::before {
+  background: linear-gradient(90deg, var(--theme-accent), transparent 70%);
+  content: "";
+  height: 2px;
+  left: 0;
+  opacity: 0.55;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .article-header {
@@ -657,6 +674,15 @@ useSeoMeta({
   max-width: 100%;
 }
 
+.article-content :deep(video) {
+  border-radius: 8px;
+  box-shadow: 0 12px 30px var(--theme-shadow);
+  display: block;
+  margin: 18px auto;
+  max-height: 72vh;
+  max-width: 100%;
+}
+
 .article-content :deep(blockquote) {
   border-left: 3px solid var(--theme-accent);
   color: var(--theme-text-secondary);
@@ -765,7 +791,7 @@ useSeoMeta({
 .comment-form input,
 .comment-form textarea,
 .reply-form textarea {
-  background: color-mix(in srgb, var(--theme-surface) 62%, var(--theme-background));
+  background: color-mix(in srgb, var(--theme-surface) 45%, var(--theme-background));
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: var(--theme-text);
@@ -805,7 +831,7 @@ useSeoMeta({
 }
 
 .comment-item {
-  background: color-mix(in srgb, var(--theme-surface) 66%, transparent);
+  background: color-mix(in srgb, var(--theme-surface) 46%, var(--theme-background));
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
   margin-left: calc(var(--comment-depth, 0) * 24px);
@@ -826,9 +852,23 @@ useSeoMeta({
 }
 
 .comment-meta {
-  display: flex;
+  align-items: center;
+  display: grid;
   gap: 12px;
-  justify-content: space-between;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.comment-avatar {
+  align-items: center;
+  background: color-mix(in srgb, var(--theme-accent) 34%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: var(--theme-text);
+  display: inline-flex;
+  font-size: 14px;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
 }
 
 .comment-author a {
@@ -841,6 +881,11 @@ useSeoMeta({
 
 .comment-author a:hover {
   color: var(--theme-accent);
+}
+
+.comment-date {
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .comment-item p {
@@ -878,10 +923,17 @@ useSeoMeta({
 
 @media (max-width: 720px) {
   .article-header,
-  .comment-actions,
-  .comment-meta {
+  .comment-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .comment-meta {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .comment-date {
+    grid-column: 2;
   }
 
   .form-grid {

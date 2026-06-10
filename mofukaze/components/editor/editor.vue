@@ -95,7 +95,13 @@
       @click="addImage"
       title="添加图片"
     >
-      添加图片
+      <ImageIcon size="13" />
+    </button>
+    <button
+      @click="addVideo"
+      title="添加视频"
+    >
+      <Film size="13" />
     </button>
     <button
   @click="addLink"
@@ -176,16 +182,15 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
-import { Extension } from '@tiptap/core'
+import { Extension, Node, mergeAttributes } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import { Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, Undo, Redo, Minus, Link as LinkIcon, Sigma } from 'lucide-vue-next'
-import { useAdmin } from '~/composables/useAdmin'
+import { Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, Undo, Redo, Minus, Link as LinkIcon, Sigma, Image as ImageIcon, Film } from 'lucide-vue-next'
 import Link from '@tiptap/extension-link'
 import { LatexNode } from './latexNode'
 import { renderLatexToHtml } from '~/utils/latex'
 
-const admin = useAdmin()
+const { uploadResource } = useResourceUpload()
 // ------------------------------
 // Props & Emits
 // ------------------------------
@@ -208,32 +213,11 @@ function generateRandomTitle(length = 10) {
 }
 
 async function uploadImage(file: File, title: string) {
-  try {
-    const formData = new FormData()
-    formData.append('image', file)
-    formData.append('title', title)
+  return uploadResource(file, 'article-image', { title, filename: file.name })
+}
 
-    const res = await fetch('/api/posts/article/uploadImage', {
-      method: 'POST',
-      headers: {
-        ...admin.getAuthHeader()   // ⭐ 加上管理员鉴权 Header
-        // 注意：不要设置 Content-Type，让浏览器自动设置 multipart/form-data boundary
-      },
-      body: formData
-    })
-
-    if (!res.ok) throw new Error(await res.text())
-
-    const result = await res.json()
-    if (result.status === 'success' && result.fileUrl) {
-      return result.fileUrl
-    } else {
-      throw new Error('图片上传失败')
-    }
-  } catch (error) {
-    console.error(error)
-    throw error
-  }
+async function uploadVideo(file: File, title: string) {
+  return uploadResource(file, 'video', { title, filename: file.name })
 }
 
 // ------------------------------
@@ -312,6 +296,33 @@ function handleLatexEdit(event: Event) {
   openLatexInput(latex, typeof pos === 'number' ? pos : null)
 }
 
+const VideoNode = Node.create({
+  name: 'video',
+  group: 'block',
+  atom: true,
+  draggable: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+      },
+    }
+  },
+
+  parseHTML() {
+    return [{ tag: 'video[src]' }]
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['video', mergeAttributes(HTMLAttributes, {
+      controls: '',
+      preload: 'metadata',
+      playsinline: '',
+    })]
+  },
+})
+
 // ------------------------------
 // Keyboard Shortcuts
 // ------------------------------
@@ -346,60 +357,11 @@ const CustomShortcuts = Extension.create({
       },
       // P - 添加图片
       'Mod-p': () => {
-        const input = document.createElement('input')
-        input.type = 'file'
-        input.accept = '.jpg,.jpeg,.png'
-        input.click()
-
-        input.onchange = async (e: any) => {
-          const file = e.target.files[0]
-          if (!file) return
-
-          // 创建临时预览 URL
-          const imageSrc = URL.createObjectURL(file)
-          
-          // 插入临时图片并记录位置
-          this.editor.chain().focus().setImage({ src: imageSrc }).run()
-          
-          // 记录插入位置（在插入后立即获取）
-          const currentPos = this.editor.state.selection.anchor
-
-          try {
-            const title = generateRandomTitle()
-            const uploadPath = await uploadImage(file, title)
-            if (uploadPath) {
-              // 查找包含 blob URL 的图片节点并替换
-              let imagePos: number | null = null
-              this.editor.state.doc.descendants((node, pos) => {
-                if (node.type.name === 'image' && node.attrs.src === imageSrc) {
-                  imagePos = pos
-                  return false // 停止遍历
-                }
-              })
-              
-              if (imagePos !== null) {
-                // 选中图片节点并更新
-                this.editor
-                  .chain()
-                  .setTextSelection({ from: imagePos, to: imagePos + 1 })
-                  .updateAttributes('image', { src: uploadPath })
-                  .run()
-              } else {
-                // 如果找不到，尝试更新当前选中的图片
-                this.editor
-                  .chain()
-                  .focus()
-                  .updateAttributes('image', { src: uploadPath })
-                  .run()
-              }
-            }
-          } catch (error) {
-            console.error('图片上传失败', error)
-          } finally {
-            // 清理临时 URL
-            URL.revokeObjectURL(imageSrc)
-          }
-        }
+        addImage()
+        return true
+      },
+      'Mod-Shift-v': () => {
+        addVideo()
         return true
       },
 
@@ -418,7 +380,7 @@ const CustomShortcuts = Extension.create({
 // Editor State
 // ------------------------------
 const editor = ref(useEditor({
-  extensions: [StarterKit, Image, LatexNode, Link.configure({
+  extensions: [StarterKit, Image, VideoNode, LatexNode, Link.configure({
     openOnClick: true,
     linkOnPaste: true,
   }), CustomShortcuts],
@@ -455,62 +417,89 @@ onBeforeUnmount(() => {
 // ------------------------------
 // Image Upload (for toolbar button)
 // ------------------------------
+function replaceNodeSource(nodeName: 'image' | 'video', localSrc: string, remoteSrc: string) {
+  if (!editor.value) return
+
+  let nodePos: number | null = null
+  editor.value.state.doc.descendants((node, pos) => {
+    if (node.type.name === nodeName && node.attrs.src === localSrc) {
+      nodePos = pos
+      return false
+    }
+  })
+
+  const chain = editor.value.chain().focus()
+  if (nodePos !== null) {
+    chain
+      .setTextSelection({ from: nodePos, to: nodePos + 1 })
+      .updateAttributes(nodeName, { src: remoteSrc })
+      .run()
+    return
+  }
+
+  chain.updateAttributes(nodeName, { src: remoteSrc }).run()
+}
+
 async function addImage() {
   const input = document.createElement('input')
   input.type = 'file'
-  input.accept = '.jpg,.jpeg,.png'
+  input.accept = 'image/*'
   input.click()
 
   input.onchange = async (e: any) => {
     const file = e.target.files[0]
     if (!file) return
 
-    // 1️⃣ 创建临时预览 URL
     const imageSrc = URL.createObjectURL(file)
-
-    // 插入临时图片
     editor.value.chain().focus().setImage({ src: imageSrc }).run()
 
     try {
       const title = generateRandomTitle()
-      // 2️⃣ 上传图片
       const uploadPath = await uploadImage(file, title)
 
       if (uploadPath) {
-        // 3️⃣ 查找包含 blob URL 的图片节点并替换
-        let imagePos: number | null = null
-        editor.value.state.doc.descendants((node, pos) => {
-          if (node.type.name === 'image' && node.attrs.src === imageSrc) {
-            imagePos = pos
-            return false // 停止遍历
-          }
-        })
-        
-        if (imagePos !== null) {
-          // 选中图片节点并更新
-          editor.value
-            .chain()
-            .setTextSelection({ from: imagePos, to: imagePos + 1 })
-            .updateAttributes('image', { src: uploadPath })
-            .run()
-        } else {
-          // 如果找不到，尝试更新当前选中的图片
-          editor.value
-            .chain()
-            .focus()
-            .updateAttributes('image', { src: uploadPath })
-            .run()
-        }
+        replaceNodeSource('image', imageSrc, uploadPath)
       }
 
     } catch (error) {
       console.error('图片上传失败', error)
     } finally {
-      // 4️⃣ 无论成功失败，都撤销临时 URL
       URL.revokeObjectURL(imageSrc)
     }
   }
 }
+
+async function addVideo() {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'video/*'
+  input.click()
+
+  input.onchange = async (e: any) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const videoSrc = URL.createObjectURL(file)
+    editor.value
+      .chain()
+      .focus()
+      .insertContent({ type: 'video', attrs: { src: videoSrc } })
+      .run()
+
+    try {
+      const title = generateRandomTitle()
+      const uploadPath = await uploadVideo(file, title)
+      if (uploadPath) {
+        replaceNodeSource('video', videoSrc, uploadPath)
+      }
+    } catch (error) {
+      console.error('视频上传失败', error)
+    } finally {
+      URL.revokeObjectURL(videoSrc)
+    }
+  }
+}
+
 function addLink() {
   const url = prompt("请输入链接 URL 💡")
   if (url) {
@@ -670,5 +659,13 @@ function addLink() {
   border-radius: 8px;
   background-color: #fff;
   min-height: 240px;
+}
+
+.editor-content-wrapper :deep(video) {
+  border-radius: 8px;
+  display: block;
+  margin: 14px auto;
+  max-height: 70vh;
+  max-width: 100%;
 }
 </style>

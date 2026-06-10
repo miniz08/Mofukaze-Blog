@@ -14,9 +14,12 @@
       >
         <div class="background-image" :style="{ backgroundImage: `url(${article.backgroundImage})` }"></div>
         <div class="content" @click="redirectToArticle(index)">
-          <div id="title">{{ article.title }}</div>
-          <div v-html="`${article.content || ''}...`"></div>
-          <pre></pre>发布于 {{ article.time }}
+          <span class="article-number">{{ String(index + 1).padStart(2, '0') }}</span>
+          <div class="article-summary">
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.content || '这篇文章暂时没有摘要。' }}</p>
+            <time>发布于 {{ formatDate(article.time) }}</time>
+          </div>
         </div>
       </li>
     </ol>
@@ -134,11 +137,20 @@ const redirectToArticle = (index: number) => {
   const articleId = displayedArticles.value[index].id;
   router.push(`/article/${articleId}`);
 };
+
+const formatDate = (value: string | Date) => {
+  if (!value) return '未知时间'
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(value))
+}
 </script>
 
 <style scoped>
 .container {
-  padding: 20px;
+  padding: 8px 0;
 }
 
 /* 骨架屏 */
@@ -160,18 +172,22 @@ const redirectToArticle = (index: number) => {
 }
 
 .article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   list-style-type: none;
   padding: 0;
 }
 
 .article-item {
-  position: relative;
   cursor: pointer;
-  padding: 10px 15px;
-  margin: 10px 0;
-  border-radius: 5px;
-  transition: transform 0.2s ease;
+  min-height: 168px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px var(--theme-shadow);
   overflow: hidden;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .background-image {
@@ -192,22 +208,67 @@ const redirectToArticle = (index: number) => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 100%, rgba(255, 255, 255, 0) 100%);
+  background:
+    linear-gradient(90deg, rgba(8, 12, 22, 0.88) 0%, rgba(8, 12, 22, 0.72) 54%, rgba(8, 12, 22, 0.34) 100%);
   transition: all 0.2s ease-in-out;
-  opacity: 0.85; /* ✨原本是 1，改成更透明但清晰的 0.85 */
+  opacity: 0.96;
   z-index: 2;
 }
 
 
 .article-item:hover .background-image::before {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-  opacity: 0.8;
+  background:
+    linear-gradient(90deg, rgba(8, 12, 22, 0.92) 0%, rgba(8, 12, 22, 0.62) 48%, rgba(8, 12, 22, 0.18) 100%);
+  opacity: 1;
   transition: all 0.8s ease-in-out;
 }
 
 .content {
+  align-items: center;
+  color: var(--theme-text);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 58px minmax(0, 1fr);
+  min-height: 168px;
+  padding: 22px;
   position: relative;
   z-index: 3;
+}
+
+.article-number {
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: var(--theme-accent);
+  display: inline-flex;
+  font-size: 18px;
+  height: 58px;
+  justify-content: center;
+  width: 58px;
+}
+
+.article-summary {
+  min-width: 0;
+}
+
+.article-summary h2 {
+  font-size: clamp(22px, 3vw, 32px);
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+.article-summary p {
+  color: var(--theme-text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  max-width: 760px;
+}
+
+.article-summary time {
+  color: var(--theme-accent);
+  display: inline-block;
+  font-size: 13px;
+  margin-top: 12px;
 }
 
 .article-item:hover {
@@ -218,12 +279,14 @@ const redirectToArticle = (index: number) => {
   transform: scale(0.98);
 }
 
-.article-item + .article-item {
-  margin-top: 10px;
-}
+@media (max-width: 640px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
 
-#title {
-  font-size: larger;
-  font-weight: bold;
+  .article-number {
+    height: 42px;
+    width: 42px;
+  }
 }
 </style>

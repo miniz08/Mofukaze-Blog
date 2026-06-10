@@ -1,5 +1,6 @@
 import { CollectionService } from '../services/collectionService.js';
 import { readBody, getQuery } from 'h3';
+import { ResourceController } from './resourceController.js';
 
 export class CollectionController {
   /**
@@ -94,23 +95,6 @@ export class CollectionController {
    * 上传图片
    */
   static async uploadImage(event: any) {
-    try {
-      const body = await readBody(event);
-      const { image, title } = body;
-
-      const result = await CollectionService.uploadImage(image, title);
-      return {
-        status: 'success',
-        fileUrl: result.fileUrl,
-      };
-    } catch (error: any) {
-      console.error('❌ Error saving the image:', error);
-      return {
-        statusCode: 500,
-        status: 'fail',
-        message: error.message || 'Error saving the image',
-      };
-    }
+    return ResourceController.upload(event, 'collection-cover');
   }
 }
-

@@ -17,7 +17,7 @@ export const articleAccessConfig: Record<string, AccessLevel> = {
   editArticle: 'public',
   deleteArticle: 'public',
   deleteArticlesByTag: 'public',
-  uploadImage: 'public',
+  uploadImage: 'private',
 };
 
 // 将所有文章接口聚合在一个文件中导出，便于统一管理和后续按 public/private 分类

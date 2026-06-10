@@ -732,6 +732,15 @@ h1 {
   max-width: 100%;
 }
 
+.quick-article-content :deep(video) {
+  border-radius: 8px;
+  box-shadow: 0 12px 30px var(--theme-shadow);
+  display: block;
+  margin: 18px auto;
+  max-height: 72vh;
+  max-width: 100%;
+}
+
 .drawer-transition-enter-active,
 .drawer-transition-leave-active {
   transition: max-height 0.32s ease, opacity 0.25s ease, transform 0.25s ease;
