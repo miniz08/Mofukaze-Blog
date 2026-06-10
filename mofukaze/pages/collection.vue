@@ -90,7 +90,7 @@ const isLoading = ref(true)
 const collections = ref<CollectionItem[]>([])
 const maxDisplayItems = 12
 
-const ifVisible = computed(() => !!admin.getAuthHeader())
+const ifVisible = computed(() => admin.isAdmin.value)
 
 const cdnRoot = computed(() => String(config.public.cdn || '').replace(/\/$/, ''))
 

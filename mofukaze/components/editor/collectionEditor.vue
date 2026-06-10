@@ -66,7 +66,6 @@ onMounted(async () => {
       method: 'GET',
     })
     const data = response as any[]
-    console.log('[DEBUG] 加载到数据：', data)
 
     if (data && data.length > 0) {
       title.value = data[0].title

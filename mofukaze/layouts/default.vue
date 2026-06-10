@@ -137,23 +137,11 @@ watch(theme, async (newTheme) => {
 function scrollTop() {
   const target = document.scrollingElement || document.documentElement || document.body
   target.scrollTo({ top: 0, behavior: 'smooth' })
-  if (process.client) {
-  console.log(
-    document.documentElement.scrollHeight,
-    document.documentElement.clientHeight
-  )
-}
 }
 
 function scrollBottom() {
   const target = document.scrollingElement || document.documentElement || document.body
   target.scrollTo({ top: target.scrollHeight, behavior: 'smooth' })
-  if (process.client) {
-  console.log(
-    document.documentElement.scrollHeight,
-    document.documentElement.clientHeight
-  )
-}
 }
 
 function triggerThemeReveal() {

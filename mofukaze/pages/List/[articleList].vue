@@ -158,7 +158,7 @@ const articleCache = ref<Record<number, ArticleDetail>>({})
 const isSubtagOpen = ref<Record<string, boolean>>({})
 const isQuickSubtagOpen = ref<Record<string, boolean>>({})
 
-const ifVisible = computed(() => !!admin.getAuthHeader())
+const ifVisible = computed(() => admin.isAdmin.value)
 
 const groupedArticleEntries = computed(() => {
   const groups = new Map<string, ArticleItem[]>()

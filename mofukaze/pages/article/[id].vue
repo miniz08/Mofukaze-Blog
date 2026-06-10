@@ -250,7 +250,7 @@ const commentForm = ref({
 })
 
 const articleId = computed(() => Number(route.params.id))
-const ifVisible = computed(() => !!admin.getAuthHeader())
+const ifVisible = computed(() => admin.isAdmin.value)
 
 const formattedPosttime = computed(() => {
   if (!article.value?.posttime) return '未知时间'

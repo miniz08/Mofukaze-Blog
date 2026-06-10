@@ -41,7 +41,7 @@ const imageSrc = ref('')
 const isLoading = ref(true)
 const collectionId = ref(0)
 
-const ifVisible = computed(() => !!admin.getAuthHeader())
+const ifVisible = computed(() => admin.isAdmin.value)
 const cdnRoot = computed(() => String(config.public.cdn || '').replace(/\/$/, ''))
 
 const resolveCoverUrl = (item: any) => {

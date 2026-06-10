@@ -65,8 +65,7 @@ const tags = ref<{ label: string, value: string }[]>([])
 const titles = ref<Record<string, { id:number, title:string, time:string, tag:string, content:string }[]>>({})
 const activeDrawer = ref<number | null>(null)
 
-// ⭐ 新增这句逻辑：根据 getAuthHeader() 是否存在决定是否能删除
-const ifVisible = computed(() => !!admin.getAuthHeader())
+const ifVisible = computed(() => admin.isAdmin.value)
 // 页面加载
 onMounted(async () => {
   // 检测管理员状态

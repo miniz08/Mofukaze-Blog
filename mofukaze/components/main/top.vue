@@ -92,6 +92,12 @@ const navItems: NavItem[] = [
     match: (path) => path === '/articleList' || path.startsWith('/List') || path.startsWith('/article/'),
   },
   {
+    label: '动态',
+    path: '/moments',
+    icon: 'fa-regular fa-comment-dots',
+    match: (path) => path === '/moments',
+  },
+  {
     label: '收藏',
     path: '/collection',
     icon: 'fa-regular fa-heart',

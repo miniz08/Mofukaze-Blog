@@ -69,7 +69,6 @@ static async getAllArticles() {
    * 优化：只返回内容摘要（前200字符），减少数据传输量
    */
    static async getLatestArticles() {
-  console.log('[Service] 正在查询数据库...');
   try {
     const articles = await prisma.article.findMany({
       where: { visible: true },
@@ -87,7 +86,13 @@ static async getAllArticles() {
     return articles.map(article => ({
       ...article,
       content: article.content
-        ? article.content.replace(/<[^>]*>/g, '').slice(0, 200)
+        ? article.content
+          .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+          .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 200)
         : '',
     }));
   } catch (err) {

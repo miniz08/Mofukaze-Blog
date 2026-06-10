@@ -67,7 +67,6 @@ const checkAdminStatus = async () => {
     if (res === undefined) {
       // 假设 token 还有效，维持上一次状态
       // 避免闪回
-      console.log('[useAdmin] /api/auth/status 返回 304 或空响应，保持原状态')
     } else {
       isAdmin.value = !!res?.isAdmin
     }

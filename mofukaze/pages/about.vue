@@ -136,6 +136,7 @@ const loadSegments = async () => {
   try {
     const res: any = await $fetch('/api/posts/about/getSegments', {
       method: 'GET',
+      query: { kind: 'about' },
     })
     if (res?.status && res.status !== 'success') {
       throw new Error(res.message || '关于页加载失败')
@@ -162,6 +163,7 @@ const createSegment = async () => {
       method: 'POST',
       headers: admin.getAuthHeader(),
       body: {
+        kind: 'about',
         title: form.value.title,
         mood: form.value.mood || null,
         sortOrder: Number(form.value.sortOrder) || 0,

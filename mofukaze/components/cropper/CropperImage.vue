@@ -29,7 +29,6 @@ const dialogVisible = ref(false)
 
 const initCropper = () => {
   if (image.value) {
-    console.log('🟢 初始化 Cropper...');
     myCropper.value = new Cropper(image.value, {
       aspectRatio: 1,
       viewMode: 3,

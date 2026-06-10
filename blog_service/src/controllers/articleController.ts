@@ -40,7 +40,6 @@ static async getAllTag(event: any) {
 static async getSubTag(event: any) {
   try {
     const query = getQuery(event);
-    console.log(query);
     const tag = String(query.tag);   
 
     if (!tag) {
@@ -48,7 +47,6 @@ static async getSubTag(event: any) {
     }
 
     const rows = await ArticleService.getSubTag(tag);
-    console.log(rows);
     return { status: 'success', data: rows };
   } catch (error: any) {
     return { status: 'error', message: error.message };
@@ -90,10 +88,8 @@ static async getSubTag(event: any) {
    * 获取最新文章
    */
 static async getLatestArticles(event: any) {
-    console.log('[Controller] 调用 service.getLatestArticles');
     try {
       const data = await ArticleService.getLatestArticles();
-      console.log('[Controller] Service 返回数据条数：', data?.length);
       return data;
     } catch (error: any) {
       console.error('[Controller] 出错啦：', error);

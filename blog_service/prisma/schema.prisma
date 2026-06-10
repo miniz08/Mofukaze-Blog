@@ -80,6 +80,7 @@ model VisitEvent {
 
 model AboutSegment {
   id        Int      @id @default(autoincrement())
+  kind      String   @default("about") @db.VarChar(32)
   title     String
   content   String   @db.LongText
   mood      String?
@@ -89,5 +90,6 @@ model AboutSegment {
   updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
 
   @@map("about_segment")
+  @@index([kind, visible, posttime], map: "AboutSegment_kind_visible_posttime_idx")
   @@index([visible, sortOrder, posttime], map: "AboutSegment_visible_sort_posttime_idx")
 }

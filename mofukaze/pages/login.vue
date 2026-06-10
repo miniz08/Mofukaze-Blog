@@ -47,18 +47,10 @@ const isLoginDisabled = computed(() => {
   return !(typeof val === 'string' && val.trim().length > 0)
 })
 
-onMounted(() => {
-  console.log('login mounted', admin.isAdmin.value)
-})
-
-watch(() => admin.isAdmin.value, (val) => {
-  console.log('admin.isAdmin changed', val)
-})
-
 // 如果已有 token，自动填充输入框
 onMounted(() => {
-  if (admin.token) {
-    tokenInput.value = admin.token
+  if (admin.token.value) {
+    tokenInput.value = admin.token.value
     admin.checkAdminStatus()
   }
 })
@@ -73,7 +65,7 @@ const handleLogin = async () => {
   admin.setToken(token)
   await admin.checkAdminStatus()
 
-  if (admin.isAdmin) {
+  if (admin.isAdmin.value) {
     alert('登录成功！')
   } else {
     alert('登录失败：令牌无效')

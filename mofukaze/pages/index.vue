@@ -61,6 +61,24 @@ const displayedArticles = ref<{
   backgroundImage: string 
 }[]>([]);
 
+const summarizeArticleContent = (content: string) => {
+  const text = String(content || '')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return text.length > 128 ? `${text.slice(0, 128)}...` : text
+}
+
+const pickBackgroundImage = (id: unknown, index: number) => {
+  const source = String(id || index)
+  const hash = source.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  return images[Math.abs(hash) % images.length]
+}
+
 const { pending: isLoading, data: articlesData } = await useAsyncData(
   'latest-articles',
   async () => {
@@ -86,9 +104,6 @@ const { pending: isLoading, data: articlesData } = await useAsyncData(
 watchEffect(() => {
   const raw = articlesData.value;
 
-  // 🌸 调试输出（你可以暂时留着）
-  console.log('[latest-articles]', raw, Array.isArray(raw));
-
   if (!raw) return;
 
   // ⚠️ 如果接口是 { data: [...] } 结构
@@ -100,12 +115,12 @@ watchEffect(() => {
 
   if (list.length === 0) return;
 
-  displayedArticles.value = list.map((item: { id: any; title: any; posttime: any; content: any; }) => ({
+  displayedArticles.value = list.map((item: { id: any; title: any; posttime: any; content: any; }, index: number) => ({
     id: item.id,
     title: item.title,
     time: item.posttime,
-    content: item.content ?? '',
-    backgroundImage: images[Math.floor(Math.random() * images.length)],
+    content: summarizeArticleContent(item.content ?? ''),
+    backgroundImage: pickBackgroundImage(item.id, index),
   }));
 });
 

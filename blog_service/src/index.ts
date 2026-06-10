@@ -9,6 +9,10 @@ import 'dotenv/config'
 console.log('🌸 服务启动中……')
 
 const PORT = Number(process.env.PORT || 3002)
+const DEBUG_ROUTES = process.env.DEBUG_ROUTES === 'true'
+const debugLog = (...args: unknown[]) => {
+  if (DEBUG_ROUTES) console.log(...args)
+}
 
 // 放在文件顶部已有的 imports 之后（或同文件中）
 function getApiRoot(): string {
@@ -16,11 +20,11 @@ function getApiRoot(): string {
   const srcPath = resolve('src/api')
 
   if (existsSync(distPath)) {
-    console.log(`[DEBUG] Using production API dir: ${distPath}`)
+    debugLog(`[DEBUG] Using production API dir: ${distPath}`)
     return distPath
   }
   if (existsSync(srcPath)) {
-    console.log(`[DEBUG] Using development API dir: ${srcPath}`)
+    debugLog(`[DEBUG] Using development API dir: ${srcPath}`)
     return srcPath
   }
 
@@ -34,7 +38,7 @@ function getApiRoot(): string {
  */
 async function registerApiRoutes(app: any) {
   const apiRoot = getApiRoot()
-  console.log('[DEBUG] Scanning API dir:', apiRoot)
+  debugLog('[DEBUG] Scanning API dir:', apiRoot)
 
   const entries = readdirSync(apiRoot)
 
@@ -59,7 +63,7 @@ async function registerApiRoutes(app: any) {
         if (typeof mod.default === 'function') {
           const name = basename(file, extname(file))
           const routePath = `/${dirName}/${name}`
-          console.log(`[DEBUG] [legacy] Route registered: ${routePath}`)
+          debugLog(`[DEBUG] [legacy] Route registered: ${routePath}`)
           app.use(routePath, mod.default)
         }
       }
@@ -76,7 +80,7 @@ async function registerApiRoutes(app: any) {
       if (typeof mod.default === 'function') {
         const name = basename(entry, extname(entry))
         const routePath = `/${name}`
-        console.log(`[DEBUG] [legacy] Route registered: ${routePath}`)
+        debugLog(`[DEBUG] [legacy] Route registered: ${routePath}`)
         app.use(routePath, mod.default)
       }
     }
@@ -97,7 +101,7 @@ function registerModuleRoutes(app: any, mod: any) {
       const handler = map[routeKey]
       if (typeof handler !== 'function') continue
 
-      console.log(`[DEBUG] [map:${key}] Route registered: ${routeKey}`)
+      debugLog(`[DEBUG] [map:${key}] Route registered: ${routeKey}`)
 
       // 使用严格匹配：只有当请求路径与 routeKey 完全相等时才交给对应 handler
       app.use(
@@ -120,18 +124,18 @@ function registerModuleRoutes(app: any, mod: any) {
 async function main() {
   const app = createApp()
   ;(globalThis as any).defineEventHandler = (fn: any) => eventHandler(fn)
-  console.log('[DEBUG] app created!')
+  debugLog('[DEBUG] app created!')
 
   // 🐾 调试中间件
   app.use(
     eventHandler((event) => {
-      console.log(`[DEBUG] ${event.req.method} ${event.req.url}`)
+      debugLog(`[DEBUG] ${event.req.method} ${event.req.url}`)
     })
   )
 
   // 🚀 注册 API 路由
   await registerApiRoutes(app)
-  console.log('[DEBUG] routes registered!')
+  debugLog('[DEBUG] routes registered!')
 
 
   // ✅ 根路由兜底

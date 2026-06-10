@@ -384,7 +384,7 @@ const editor = ref(useEditor({
     openOnClick: true,
     linkOnPaste: true,
   }), CustomShortcuts],
-  content: props.modelValue || "<p>God  Only Knows</p>",
+  content: props.modelValue || '<p></p>',
   onUpdate: ({ editor }) => {
     emit('update:modelValue', editor.getHTML())
   }
@@ -394,8 +394,9 @@ const fontSize = ref(16)
 
 // 监听外部内容变化
 watch(() => props.modelValue, (newValue) => {
-  if (newValue && editor.value && editor.value.getHTML() !== newValue) {
-    editor.value.commands.setContent(newValue)
+  const nextContent = newValue || '<p></p>'
+  if (editor.value && editor.value.getHTML() !== nextContent) {
+    editor.value.commands.setContent(nextContent)
   }
 })
 
@@ -542,11 +543,14 @@ function addLink() {
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px;
-  background-color: #f7f8fa;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--theme-shadow) 52%, transparent);
   margin: 0.6rem;
+  backdrop-filter: blur(12px) saturate(125%);
 }
 
 .toolbar-group {
@@ -556,43 +560,36 @@ function addLink() {
 }
 
 .editor-toolbar button {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #fff;
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-reading) 76%, transparent);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--theme-text);
   cursor: pointer;
-  transition: all 0.25s ease;
-  font-family: "喵字摄影体";
+  display: inline-flex;
+  font-family: inherit;
+  gap: 4px;
+  min-height: 30px;
+  padding: 5px 8px;
+  transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
 }
 
 .editor-toolbar button.is-active {
-  background-color: #00b4ff;
-  color: white;
-  border-color: #00b4ff;
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 48%, var(--border-soft));
+  color: color-mix(in srgb, var(--theme-accent) 72%, var(--theme-text));
 }
 
 .editor-toolbar button:disabled {
-  background-color: #eee;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .editor-toolbar button:hover:not(:disabled) {
-  background-color: #e6f7ff;
-}
-.editor-toolbar button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-}
-
-.editor-toolbar button:hover {
-  color: #1e90ff; /* hover高亮色 */
-}
-
-.editor-toolbar button[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background: color-mix(in srgb, var(--theme-accent) 16%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 40%, var(--border-soft));
+  color: color-mix(in srgb, var(--theme-accent) 72%, var(--theme-text));
+  transform: translateY(-1px);
 }
 
 .latex-input-panel {
@@ -600,17 +597,19 @@ function addLink() {
   gap: 10px;
   margin: 0 0.6rem 0.8rem;
   padding: 12px;
-  border: 1px solid #d8e3ea;
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  background: #fbfdff;
+  background: var(--surface-card);
 }
 
 .latex-input {
   width: 100%;
   min-height: 72px;
   resize: vertical;
-  border: 1px solid #c8d6df;
-  border-radius: 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-reading) 78%, var(--surface-soft));
+  color: var(--theme-text);
   padding: 9px 10px;
   font-family: Consolas, Monaco, 'Courier New', monospace;
   font-size: 14px;
@@ -619,10 +618,10 @@ function addLink() {
 .latex-preview {
   min-height: 42px;
   overflow-x: auto;
-  border: 1px dashed #c8d6df;
-  border-radius: 6px;
+  border: 1px dashed var(--border-soft);
+  border-radius: 8px;
   padding: 10px;
-  background: #fff;
+  background: var(--surface-reading);
 }
 
 .latex-actions {
@@ -632,9 +631,10 @@ function addLink() {
 }
 
 .latex-actions button {
-  border: 1px solid #c8d6df;
-  border-radius: 6px;
-  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--theme-text);
   cursor: pointer;
   padding: 6px 12px;
 }
@@ -648,17 +648,41 @@ function addLink() {
 }
 
 :deep(.latex-node.is-selected) {
-  outline: 2px solid #00b4ff;
+  outline: 2px solid var(--theme-accent);
   outline-offset: 2px;
 }
 
 /* ✏️ 编辑区 */
 .editor-content-wrapper {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-soft);
   padding: 12px;
   border-radius: 8px;
-  background-color: #fff;
+  background: color-mix(in srgb, var(--surface-reading) 86%, var(--surface-soft));
+  color: var(--theme-text);
   min-height: 240px;
+}
+
+.editor-content-wrapper :deep(.ProseMirror) {
+  min-height: 216px;
+  outline: none;
+}
+
+.editor-content-wrapper :deep(.ProseMirror p:first-child) {
+  margin-top: 0;
+}
+
+.editor-content-wrapper :deep(.ProseMirror p:last-child) {
+  margin-bottom: 0;
+}
+
+.editor-content-wrapper :deep(img) {
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  margin: 14px auto;
+  max-height: 70vh;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .editor-content-wrapper :deep(video) {
