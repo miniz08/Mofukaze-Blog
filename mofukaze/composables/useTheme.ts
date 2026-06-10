@@ -26,29 +26,29 @@ export interface Theme {
 
 export const themes: Record<string, Theme> = {
   // 在 composables/useTheme.ts 中修改星光主题的背景
-starlight: {
-  name: 'starlight',
-  label: '星光',
-  colors: {
-    primary: '#ffffff',
-    secondary: '#e6f3ff',
-    accent: '#4a90e2',
-    background: 'rgba(0,0,0,0.8)',
-    surface: 'rgba(255,255,255,0.08)',
-    text: '#ffffff',
-    textSecondary: 'rgba(255,255,255,0.7)'
+  starlight: {
+    name: 'starlight',
+    label: '星光',
+    colors: {
+      primary: '#ffffff',
+      secondary: '#dbeafe',
+      accent: '#8ec5ff',
+      background: 'rgba(0,0,0,0.8)',
+      surface: 'rgba(255,255,255,0.08)',
+      text: '#ffffff',
+      textSecondary: 'rgba(255,255,255,0.7)'
+    },
+    backgrounds: {
+      // 修复：使用URL编码的完整背景值
+      main: 'url("http://mofukaze.me/img/frame/7a/5d/7a5d3fe02ad4ea1285ff6fc273b8c69a58b9643b977712ad4a132e46de9f2e95") no-repeat center center fixed',
+      overlay: 'linear-gradient(45deg, rgba(120,180,255,0.13), rgba(210,225,255,0.08))'
+    },
+    effects: {
+      blur: 'blur(22px)',
+      shadow: 'rgba(80,160,255,0.18)',
+      glow: 'rgba(100,180,255,0.28)'
+    }
   },
-  backgrounds: {
-    // 修复：使用URL编码的完整背景值
-    main: 'url("http://mofukaze.me/img/frame/7a/5d/7a5d3fe02ad4ea1285ff6fc273b8c69a58b9643b977712ad4a132e46de9f2e95") no-repeat center center fixed',
-    overlay: 'linear-gradient(45deg, rgba(138,43,226,0.1), rgba(30,144,255,0.1))'
-  },
-  effects: {
-    blur: 'blur(22px)',
-    shadow: 'rgba(80,160,255,0.18)',
-    glow: 'rgba(100,180,255,0.28)'
-  }
-},
   
   sakura: {
     name: 'sakura',
@@ -78,9 +78,9 @@ starlight: {
     name: 'aurora',
     label: '极光',
     colors: {
-      primary: '#00ff88',
-      secondary: '#00b4ff',
-      accent: '#ff0080',
+      primary: '#7cf7c7',
+      secondary: '#7dd3fc',
+      accent: '#c4b5fd',
       background: 'rgba(0,20,40,0.9)',
       surface: 'rgba(0,255,136,0.05)',
       text: '#e0ffff',
@@ -89,12 +89,12 @@ starlight: {
     backgrounds: {
       main: 'url("http://mofukaze.me/img/frame/66/c7/66c70fc4471d7cdd54df0ed8f1538ba28e03391b64b76e0850f3555f12827d75") no-repeat center center fixed',
       // main: 'linear-gradient(180deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)',
-      overlay: 'linear-gradient(45deg, rgba(0,255,136,0.1), rgba(0,180,255,0.1), rgba(255,0,128,0.1))'
+      overlay: 'linear-gradient(45deg, rgba(124,247,199,0.12), rgba(125,211,252,0.12), rgba(196,181,253,0.1))'
     },
     effects: {
       blur: 'blur(25px)',
-      shadow: 'rgba(0,255,136,0.2)',
-      glow: 'rgba(0,255,136,0.4)'
+      shadow: 'rgba(125,211,252,0.2)',
+      glow: 'rgba(124,247,199,0.34)'
     }
   },
   
@@ -103,8 +103,8 @@ starlight: {
     label: '午夜',
     colors: {
       primary: '#6366f1',
-      secondary: '#8b5cf6',
-      accent: '#ec4899',
+      secondary: '#38bdf8',
+      accent: '#facc15',
       background: 'rgba(15,23,42,0.95)',
       surface: 'rgba(30,41,59,0.8)',
       text: '#f1f5f9',
@@ -113,12 +113,12 @@ starlight: {
     backgrounds: {
       main: 'url("http://mofukaze.me/img/frame/25/45/25453d4a41a2d6b9001d917bde45f9ff05db2554c95bbb1e331a7e3eb86475d6") no-repeat center center fixed',
       // main: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%)',
-      overlay: 'linear-gradient(45deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))'
+      overlay: 'linear-gradient(45deg, rgba(99,102,241,0.1), rgba(56,189,248,0.1), rgba(250,204,21,0.06))'
     },
     effects: {
       blur: 'blur(18px)',
-      shadow: 'rgba(99,102,241,0.15)',
-      glow: 'rgba(99,102,241,0.25)'
+      shadow: 'rgba(56,189,248,0.15)',
+      glow: 'rgba(147,197,253,0.26)'
     }
   }
 }

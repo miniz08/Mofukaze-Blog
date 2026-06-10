@@ -33,6 +33,63 @@
   z-index: -1;
 }
 
+.kira-layer {
+  inset: 0;
+  opacity: 0.48;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.kira-layer span {
+  animation: kiraTwinkle var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+  height: var(--size);
+  left: var(--x);
+  position: absolute;
+  top: var(--y);
+  transform: rotate(45deg) scale(0.62);
+  width: var(--size);
+}
+
+.kira-layer span::before,
+.kira-layer span::after {
+  background: color-mix(in srgb, var(--theme-accent) 72%, #fff);
+  border-radius: 999px;
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.kira-layer span::before {
+  height: 100%;
+  width: 1px;
+}
+
+.kira-layer span::after {
+  height: 1px;
+  width: 100%;
+}
+
+#wrapper.theme-starlight .kira-layer {
+  opacity: 0.68;
+}
+
+#wrapper.theme-sakura .kira-layer {
+  opacity: 0.34;
+}
+
+#wrapper.theme-aurora .kira-layer {
+  opacity: 0.5;
+}
+
+#wrapper.theme-midnight .kira-layer {
+  opacity: 0.42;
+}
+
 .background-snapshot {
   background-position: center !important;
   background-repeat: no-repeat !important;

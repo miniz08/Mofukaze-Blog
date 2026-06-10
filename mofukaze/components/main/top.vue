@@ -1,10 +1,23 @@
 <template>
   <div class="top-wrapper">
     <nav v-if="!isMiniNav" class="full-nav" aria-label="主导航">
-      <button class="brand-mark" type="button" @click="goTo('/')">
-        <span>Mofukaze</span>
-        <strong>北风</strong>
-      </button>
+      <div class="brand-area">
+        <button class="brand-name" type="button" @click="goTo('/')">
+          Mofukaze.me
+        </button>
+        <div class="social-links" aria-label="社交链接">
+          <button
+            v-for="link in socialLinks"
+            :key="link.label"
+            class="social-link"
+            type="button"
+            :title="link.label"
+            @click="openSocial(link.href)"
+          >
+            <i :class="link.icon"></i>
+          </button>
+        </div>
+      </div>
 
       <div class="nav-links">
         <button
@@ -56,9 +69,14 @@ const router = useRouter()
 const route = useRoute()
 
 const isMiniNav = ref(false)
-const scrollThreshold = 300
-const scrollHysteresis = 20
+const scrollHysteresis = 12
 const ifVisible = computed(() => admin.isAdmin.value)
+
+const socialLinks = [
+  { label: 'GitHub', icon: 'fa-brands fa-github', href: '' },
+  { label: 'Bilibili', icon: 'fa-brands fa-bilibili', href: '' },
+  { label: 'Twitter', icon: 'fa-brands fa-twitter', href: '' },
+]
 
 const navItems: NavItem[] = [
   {
@@ -111,8 +129,26 @@ const goTo = (path: string) => {
   router.push(path)
 }
 
+const openSocial = (href: string) => {
+  if (!href || !process.client) return
+  window.open(href, '_blank', 'noopener,noreferrer')
+}
+
+const getMiniThreshold = () => {
+  const paper = document.querySelector('.paper') as HTMLElement | null
+  const fullNav = document.querySelector('.full-nav') as HTMLElement | null
+
+  if (!paper) return 96
+
+  const navBottom = 20 + (fullNav?.getBoundingClientRect().height || 86)
+  const paperTop = paper.getBoundingClientRect().top + window.scrollY
+
+  return Math.max(48, paperTop - navBottom - 8)
+}
+
 const handleScroll = () => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const scrollThreshold = getMiniThreshold()
 
   if (!isMiniNav.value && scrollTop > scrollThreshold) {
     isMiniNav.value = true
@@ -125,11 +161,13 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('resize', handleScroll, { passive: true })
   handleScroll()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('resize', handleScroll)
 })
 </script>
 
@@ -167,7 +205,8 @@ onUnmounted(() => {
   right: 18px;
 }
 
-.brand-mark,
+.brand-name,
+.social-link,
 .nav-link,
 .mini-nav-item {
   color: var(--theme-text);
@@ -175,26 +214,48 @@ onUnmounted(() => {
   font-family: inherit;
 }
 
-.brand-mark {
-  background: color-mix(in srgb, var(--surface-reading) 68%, transparent);
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
+.brand-area {
+  align-items: center;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 136px;
-  padding: 10px 13px;
-  text-align: left;
+  gap: 14px;
+  min-width: 238px;
 }
 
-.brand-mark span {
-  color: var(--readable-muted);
-  font-size: 12px;
-}
-
-.brand-mark strong {
-  font-size: 22px;
+.brand-name {
+  background: transparent;
+  border: 0;
+  font-size: clamp(22px, 2.3vw, 30px);
+  font-weight: 800;
   line-height: 1;
+  padding: 0;
+  text-align: left;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--theme-accent) 34%, transparent);
+}
+
+.social-links {
+  display: flex;
+  gap: 7px;
+}
+
+.social-link {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-soft) 72%, transparent);
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 15px;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, color 0.25s ease;
+  width: 34px;
+}
+
+.social-link:hover {
+  background: color-mix(in srgb, var(--theme-accent) 20%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 42%, var(--border-soft));
+  color: color-mix(in srgb, var(--theme-accent) 72%, var(--theme-text));
+  transform: translateY(-1px);
 }
 
 .nav-links {
@@ -287,7 +348,10 @@ onUnmounted(() => {
     width: min(94%, 680px);
   }
 
-  .brand-mark {
+  .brand-area {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
     min-width: 0;
   }
 

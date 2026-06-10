@@ -116,6 +116,27 @@
   }
 }
 
+@keyframes kiraTwinkle {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 color-mix(in srgb, var(--theme-accent) 0%, transparent));
+    opacity: 0;
+    transform: rotate(45deg) scale(0.54);
+  }
+  18% {
+    opacity: 0.72;
+    transform: rotate(45deg) scale(1);
+  }
+  36% {
+    filter: drop-shadow(0 0 9px color-mix(in srgb, var(--theme-accent) 42%, transparent));
+    opacity: 0.18;
+    transform: rotate(45deg) scale(0.72);
+  }
+  68% {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.48) translate3d(12px, -10px, 0);
+  }
+}
+
 .page-enter-active,
 .page-leave-active {
   transition:

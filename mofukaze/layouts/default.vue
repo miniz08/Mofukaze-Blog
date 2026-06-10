@@ -9,27 +9,26 @@
       ></div>
     </div>
     <div class="ambient-veil" aria-hidden="true"></div>
-<div class="midnight-meteors" aria-hidden="true">
-  <span style="--top: -12vh; --left: 92vw; --tail: 220px; --duration: 6.5s; --delay: -0.6s;"></span>
-
-  <span style="--top: -6vh; --left: 80vw; --tail: 180px; --duration: 7.2s; --delay: -2.1s;"></span>
-
-  <span style="--top: 4vh; --left: 108vw; --tail: 240px; --duration: 6.8s; --delay: -1.4s;"></span>
-
-  <span style="--top: 10vh; --left: 70vw; --tail: 170px; --duration: 8s; --delay: -3s;"></span>
-
-  <span style="--top: -10vh; --left: 118vw; --tail: 210px; --duration: 7.5s; --delay: -0.2s;"></span>
-
-  <span style="--top: 16vh; --left: 95vw; --tail: 160px; --duration: 6.9s; --delay: -1.9s;"></span>
-
-  <span style="--top: 22vh; --left: 84vw; --tail: 140px; --duration: 8.4s; --delay: -2.8s;"></span>
-
-  <span style="--top: 0vh; --left: 64vw; --tail: 190px; --duration: 7.8s; --delay: -0.9s;"></span>
-
-  <span style="--top: 30vh; --left: 110vw; --tail: 230px; --duration: 9s; --delay: -1.7s;"></span>
-
-  <span style="--top: 12vh; --left: 126vw; --tail: 175px; --duration: 7.1s; --delay: -3.4s;"></span>
-</div>
+    <div class="kira-layer" aria-hidden="true">
+      <span style="--x: 8vw; --y: 32vh; --size: 12px; --duration: 7s; --delay: -1s;"></span>
+      <span style="--x: 18vw; --y: 74vh; --size: 8px; --duration: 9s; --delay: -4s;"></span>
+      <span style="--x: 31vw; --y: 18vh; --size: 10px; --duration: 8s; --delay: -2.6s;"></span>
+      <span style="--x: 54vw; --y: 82vh; --size: 9px; --duration: 10s; --delay: -5.2s;"></span>
+      <span style="--x: 72vw; --y: 24vh; --size: 13px; --duration: 8.6s; --delay: -3.4s;"></span>
+      <span style="--x: 88vw; --y: 62vh; --size: 9px; --duration: 9.4s; --delay: -6s;"></span>
+    </div>
+    <div class="midnight-meteors" aria-hidden="true">
+      <span style="--top: -12vh; --left: 92vw; --tail: 220px; --duration: 6.5s; --delay: -0.6s;"></span>
+      <span style="--top: -6vh; --left: 80vw; --tail: 180px; --duration: 7.2s; --delay: -2.1s;"></span>
+      <span style="--top: 4vh; --left: 108vw; --tail: 240px; --duration: 6.8s; --delay: -1.4s;"></span>
+      <span style="--top: 10vh; --left: 70vw; --tail: 170px; --duration: 8s; --delay: -3s;"></span>
+      <span style="--top: -10vh; --left: 118vw; --tail: 210px; --duration: 7.5s; --delay: -0.2s;"></span>
+      <span style="--top: 16vh; --left: 95vw; --tail: 160px; --duration: 6.9s; --delay: -1.9s;"></span>
+      <span style="--top: 22vh; --left: 84vw; --tail: 140px; --duration: 8.4s; --delay: -2.8s;"></span>
+      <span style="--top: 0vh; --left: 64vw; --tail: 190px; --duration: 7.8s; --delay: -0.9s;"></span>
+      <span style="--top: 30vh; --left: 110vw; --tail: 230px; --duration: 9s; --delay: -1.7s;"></span>
+      <span style="--top: 12vh; --left: 126vw; --tail: 175px; --duration: 7.1s; --delay: -3.4s;"></span>
+    </div>
 
     <!-- 顶部导航 -->
     <Top class="top-global" />
@@ -105,7 +104,7 @@ useVisitTracker()
 // ✅ Nuxt专用SEO函数
 useSeoMeta({
   title: 'Mofukaze',
-  ogTitle: '北风',
+  ogTitle: 'Mofukaze.me',
   description: '夹杂雪花的强风，来自北方的孤风。',
   ogDescription: '夹杂雪花的强风，来自北方的孤风。',
 })

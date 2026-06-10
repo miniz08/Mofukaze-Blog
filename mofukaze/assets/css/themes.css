@@ -1,14 +1,15 @@
 /* assets/css/themes.css */
 .theme-starlight {
-  --surface-reading: rgba(9, 15, 28, 0.91);
-  --surface-page: rgba(10, 17, 30, 0.84);
-  --surface-card: rgba(13, 21, 36, 0.78);
-  --surface-soft: rgba(255, 255, 255, 0.075);
-  --surface-glass: rgba(15, 23, 38, 0.56);
-  --surface-floating: rgba(13, 20, 34, 0.68);
-  --border-soft: rgba(255, 255, 255, 0.13);
-  --border-medium: rgba(255, 255, 255, 0.22);
-  --ambient-veil: linear-gradient(180deg, rgba(3, 7, 18, 0.54), rgba(3, 7, 18, 0.35) 42%, rgba(3, 7, 18, 0.62));
+  --surface-reading: rgba(13, 22, 40, 0.78);
+  --surface-page: rgba(12, 20, 36, 0.62);
+  --surface-card: rgba(15, 25, 43, 0.58);
+  --surface-soft: rgba(255, 255, 255, 0.1);
+  --surface-glass: rgba(18, 29, 48, 0.42);
+  --surface-floating: rgba(15, 24, 42, 0.52);
+  --border-soft: rgba(255, 255, 255, 0.16);
+  --border-medium: rgba(255, 255, 255, 0.24);
+  --ambient-veil: linear-gradient(180deg, rgba(7, 13, 26, 0.26), rgba(7, 13, 26, 0.12) 42%, rgba(7, 13, 26, 0.34));
+  --content-shadow: 0 18px 48px rgba(7, 14, 28, 0.2);
 }
 
 .theme-sakura {
@@ -25,15 +26,16 @@
 }
 
 .theme-aurora {
-  --surface-reading: rgba(2, 18, 27, 0.92);
-  --surface-page: rgba(3, 19, 31, 0.86);
-  --surface-card: rgba(4, 25, 35, 0.8);
-  --surface-soft: rgba(224, 255, 255, 0.07);
-  --surface-glass: rgba(2, 26, 34, 0.58);
-  --surface-floating: rgba(2, 22, 32, 0.7);
-  --border-soft: rgba(224, 255, 255, 0.13);
-  --border-medium: rgba(224, 255, 255, 0.22);
-  --ambient-veil: linear-gradient(180deg, rgba(0, 10, 18, 0.58), rgba(0, 16, 22, 0.34) 42%, rgba(0, 10, 18, 0.64));
+  --surface-reading: rgba(2, 28, 37, 0.78);
+  --surface-page: rgba(3, 28, 42, 0.64);
+  --surface-card: rgba(4, 34, 44, 0.6);
+  --surface-soft: rgba(224, 255, 255, 0.1);
+  --surface-glass: rgba(2, 34, 44, 0.44);
+  --surface-floating: rgba(2, 27, 39, 0.56);
+  --border-soft: rgba(224, 255, 255, 0.16);
+  --border-medium: rgba(224, 255, 255, 0.24);
+  --ambient-veil: linear-gradient(180deg, rgba(0, 12, 20, 0.34), rgba(0, 20, 28, 0.14) 42%, rgba(0, 12, 20, 0.4));
+  --content-shadow: 0 18px 48px rgba(0, 15, 22, 0.2);
 }
 
 .theme-midnight {
@@ -43,7 +45,7 @@
   --surface-soft: rgba(241, 245, 249, 0.07);
   --surface-glass: rgba(20, 30, 52, 0.6);
   --surface-floating: rgba(15, 23, 42, 0.74);
-  --border-soft: rgba(241, 245, 249, 0.13);
+  --border-soft: rgba(241, 245, 249, 0.14);
   --border-medium: rgba(241, 245, 249, 0.22);
   --ambient-veil: linear-gradient(180deg, rgba(2, 6, 23, 0.46), rgba(2, 6, 23, 0.28) 42%, rgba(2, 6, 23, 0.62));
 }
@@ -133,11 +135,11 @@
   background:
     linear-gradient(
       112deg,
-      rgba(0, 255, 136, 0.32) 0%,
-      rgba(0, 180, 255, 0.27) 26%,
-      rgba(255, 0, 128, 0.22) 54%,
-      rgba(255, 198, 109, 0.14) 78%,
-      rgba(0, 255, 136, 0.32) 100%
+      rgba(124, 247, 199, 0.3) 0%,
+      rgba(125, 211, 252, 0.28) 30%,
+      rgba(196, 181, 253, 0.22) 58%,
+      rgba(167, 243, 208, 0.16) 78%,
+      rgba(124, 247, 199, 0.3) 100%
     );
   background-size: 420% 420%;
   filter: saturate(118%);
@@ -148,9 +150,9 @@
 
 #wrapper.theme-aurora::before {
   background-image:
-    radial-gradient(rgba(0, 255, 136, 0.42) 1px, transparent 2.2px),
-    radial-gradient(rgba(0, 180, 255, 0.3) 1.5px, transparent 2.8px),
-    radial-gradient(rgba(255, 0, 128, 0.18) 1px, transparent 2.4px);
+    radial-gradient(rgba(124, 247, 199, 0.38) 1px, transparent 2.2px),
+    radial-gradient(rgba(125, 211, 252, 0.3) 1.5px, transparent 2.8px),
+    radial-gradient(rgba(196, 181, 253, 0.18) 1px, transparent 2.4px);
   background-position: 0 0, 120px 80px, 220px 20px;
   background-size: 150px 190px, 260px 310px, 420px 430px;
   mix-blend-mode: screen;
@@ -161,7 +163,7 @@
 #wrapper.theme-aurora::after {
   background-image:
     radial-gradient(circle at center, rgba(0, 180, 255, 0.2) 0 1.4px, transparent 3px),
-    radial-gradient(circle at center, rgba(255, 0, 128, 0.15) 0 1.2px, transparent 2.8px);
+    radial-gradient(circle at center, rgba(196, 181, 253, 0.15) 0 1.2px, transparent 2.8px);
   background-position: 0 0, 120px 80px;
   background-size: 320px 320px, 520px 520px;
   filter: blur(0.2px);
