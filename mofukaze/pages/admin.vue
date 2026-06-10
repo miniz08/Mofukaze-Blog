@@ -400,7 +400,7 @@ h1 {
 
 .primary-button,
 .ghost-button {
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
@@ -410,12 +410,12 @@ h1 {
 }
 
 .primary-button {
-  background: color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
   color: var(--theme-text);
 }
 
 .ghost-button {
-  background: color-mix(in srgb, var(--theme-surface) 68%, var(--theme-background));
+  background: var(--surface-soft);
   color: var(--theme-text);
 }
 
@@ -434,11 +434,10 @@ h1 {
 .locked-panel,
 .panel,
 .stat-card {
-  background: color-mix(in srgb, var(--theme-surface) 74%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  box-shadow: 0 12px 32px var(--theme-shadow);
-  backdrop-filter: var(--theme-blur) saturate(145%);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--theme-shadow) 58%, rgba(0, 0, 0, 0.16));
 }
 
 .dashboard-state {
@@ -466,7 +465,7 @@ h1 {
 }
 
 .locked-panel p {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .stats-grid {
@@ -505,7 +504,7 @@ h1 {
 }
 
 .stat-card span {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   display: block;
   font-size: 13px;
   margin-top: 18px;
@@ -518,7 +517,7 @@ h1 {
 }
 
 .stat-card small {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   display: block;
   font-size: 12px;
   margin-top: 4px;
@@ -579,8 +578,8 @@ h1 {
 
 .bar-track {
   align-items: end;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   display: flex;
   gap: 4px;
@@ -612,7 +611,7 @@ h1 {
 .trend-bar small,
 .legend span,
 .empty-text {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .legend {
@@ -663,7 +662,7 @@ h1 {
 }
 
 .tag-meter {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--surface-soft);
   border-radius: 999px;
   height: 10px;
   overflow: hidden;
@@ -679,8 +678,8 @@ h1 {
 .comment-item,
 .rank-item,
 .latest-item {
-  background: color-mix(in srgb, var(--theme-surface) 58%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--surface-reading) 52%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: inherit;
   padding: 12px;
@@ -698,7 +697,7 @@ h1 {
 .comment-meta span,
 .latest-item small,
 .comment-item p {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .comment-item p {
@@ -715,7 +714,7 @@ h1 {
 .rank-item:hover,
 .latest-item:hover,
 .comment-item:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: color-mix(in srgb, var(--theme-accent) 14%, var(--surface-reading));
   box-shadow: 0 8px 20px var(--theme-shadow);
   transform: translateY(-1px);
 }

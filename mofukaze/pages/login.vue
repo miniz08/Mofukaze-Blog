@@ -98,26 +98,25 @@ const handleLogout = () => {
 }
 
 .login-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: var(--surface-reading);
+  border-radius: 8px;
   padding: 32px;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--content-shadow);
+  border: 1px solid var(--border-soft);
 }
 
 h2 {
   margin: 0 0 8px 0;
-  color: rgba(16, 16, 17, 0.95);
+  color: var(--theme-text);
   font-size: 24px;
   font-weight: 600;
 }
 
 .hint {
   margin: 0 0 24px 0;
-  color: rgba(16, 16, 17, 0.7);
+  color: var(--readable-muted);
   font-size: 14px;
 }
 
@@ -128,18 +127,18 @@ h2 {
 .token-input {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(16, 16, 17, 0.95);
+  background: color-mix(in srgb, var(--surface-reading) 72%, var(--surface-soft));
+  color: var(--theme-text);
   font-size: 14px;
   transition: all 0.3s ease;
 }
 
 .token-input:focus {
   outline: none;
-  border-color: rgba(120, 160, 255, 0.6);
-  background: rgba(255, 255, 255, 0.15);
+  border-color: color-mix(in srgb, var(--theme-accent) 56%, var(--border-soft));
+  background: color-mix(in srgb, var(--theme-accent) 10%, var(--surface-reading));
   box-shadow: 0 0 0 3px rgba(120, 160, 255, 0.1);
 }
 
@@ -218,4 +217,3 @@ h2 {
   color: rgba(16, 16, 17, 0.9);
 }
 </style>
-

@@ -117,11 +117,10 @@ onMounted(() => {
 
 .detail-state,
 .collection-detail {
-  background: color-mix(in srgb, var(--theme-surface) 70%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  box-shadow: 0 12px 32px var(--theme-shadow);
-  backdrop-filter: var(--theme-blur) saturate(145%);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--theme-shadow) 58%, rgba(0, 0, 0, 0.16));
 }
 
 .detail-state {
@@ -167,7 +166,7 @@ onMounted(() => {
 }
 
 .detail-copy span {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .admin-actions {
@@ -177,7 +176,7 @@ onMounted(() => {
 }
 
 .admin-actions button {
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;
@@ -186,7 +185,7 @@ onMounted(() => {
 }
 
 .edit-button {
-  background: color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
 }
 
 .delete-button {
@@ -194,7 +193,8 @@ onMounted(() => {
 }
 
 .collection-content {
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--surface-reading);
+  border-top: 1px solid var(--border-soft);
   font-size: 17px;
   line-height: 1.86;
   padding: clamp(18px, 3vw, 30px);

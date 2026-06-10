@@ -228,9 +228,8 @@ const hideArticle = async (article: { id: number }) => {
   font-size: 26px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 0 8px rgba(173, 216, 255, 0.35);
-  backdrop-filter: blur(4px);
+  color: var(--theme-text);
+  text-shadow: 0 0 8px var(--theme-glow);
 }
 
 /* 🌫️ 抽屉外观：漂浮半透明玻璃 */
@@ -238,26 +237,25 @@ const hideArticle = async (article: { id: number }) => {
   width: 90%;
   max-width: 1720px;
   margin-bottom: 20px;
-  border-radius: 18px;
+  border-radius: 8px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px) saturate(180%);
-  box-shadow: 0 6px 24px rgba(30, 90, 180, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--surface-card);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--theme-shadow) 58%, rgba(0, 0, 0, 0.16));
+  border: 1px solid var(--border-soft);
   transition: all 0.4s ease;
 }
 
 .drawer:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(80, 150, 255, 0.25);
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--theme-shadow) 70%, rgba(0, 0, 0, 0.18));
 }
 
 /* 🌸 抽屉标题 */
 .drawer-header {
   padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--surface-reading) 46%, transparent);
   font-weight: 600;
-  color: rgba(16, 16, 17, 0.95);
+  color: var(--theme-text);
   font-size: 18px;
   display: flex;
   justify-content: space-between;
@@ -267,14 +265,13 @@ const hideArticle = async (article: { id: number }) => {
 }
 
 .drawer-header:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--theme-accent) 12%, var(--surface-reading));
 }
 
 /* ✨ 内容部分 */
 .drawer-content {
   padding: 14px 20px 16px;
   background: transparent;
-  backdrop-filter: blur(10px);
 }
 
 /* 列表 */
@@ -288,26 +285,26 @@ ul {
 li {
   padding: 10px 12px;
   margin-bottom: 8px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-reading) 56%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   transition: all 0.3s ease;
-  color: rgba(11, 11, 11, 0.9);
+  color: var(--theme-text);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  backdrop-filter: blur(6px);
 }
 
 li:hover {
-  background: rgba(180, 210, 255, 0.15);
-  box-shadow: 0 0 10px rgba(100, 160, 255, 0.25);
+  background: color-mix(in srgb, var(--theme-accent) 14%, var(--surface-reading));
+  box-shadow: 0 8px 22px var(--theme-shadow);
   transform: translateX(4px);
 }
 
 .ellipsis {
   text-align: center;
   cursor: pointer;
-  color: rgba(200, 220, 255, 0.7);
+  color: var(--readable-muted);
   font-style: italic;
   margin-top: 6px;
   transition: color 0.3s ease;
@@ -322,24 +319,23 @@ li:hover {
   margin-left: 8px;
   padding: 4px 14px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--border-soft);
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  color: rgb(10, 9, 9);
-  background: rgba(120, 160, 255, 0.25);
+  color: var(--theme-text);
+  background: color-mix(in srgb, var(--theme-accent) 18%, var(--surface-soft));
   transition: all 0.35s ease;
-  backdrop-filter: blur(10px);
 }
 
 .drawer-actions button:hover {
-  background: rgba(120, 170, 255, 0.45);
+  background: color-mix(in srgb, var(--theme-accent) 28%, var(--surface-soft));
   box-shadow: 0 0 12px rgba(130, 180, 255, 0.4);
   transform: scale(1.05);
 }
 
 .view-all {
-  border-color: rgba(140, 180, 255, 0.4);
+  border-color: color-mix(in srgb, var(--theme-accent) 38%, var(--border-soft));
 }
 
 .delete-all {
@@ -354,17 +350,16 @@ li:hover {
 
 /* 🧊 编辑/删除小按钮 */
 .delete-button, .edit-button,.hide-button {
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border-soft);
   border-radius: 9999px;
   padding: 4px 12px;
   margin-left: 8px;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(9, 8, 8, 0.9);
-  background: rgba(150, 180, 255, 0.15);
+  color: var(--theme-text);
+  background: color-mix(in srgb, var(--theme-accent) 14%, var(--surface-soft));
   transition: all 0.3s ease;
-  backdrop-filter: blur(6px);
 }
 
 .delete-button:hover {
@@ -420,4 +415,3 @@ li {
 
 
 </style>
-

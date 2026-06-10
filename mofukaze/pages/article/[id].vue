@@ -31,6 +31,8 @@
           <div
             ref="articleContentRef"
             class="article-content"
+            @click="handleArticleContentClick"
+            @dblclick="handleArticleContentDoubleClick"
             v-html="article.content"
           ></div>
         </article>
@@ -150,6 +152,33 @@
         </div>
       </aside>
     </div>
+
+    <teleport to="body">
+      <div
+        v-if="selectedMedia"
+        class="media-viewer"
+        role="dialog"
+        aria-modal="true"
+        @click="closeMediaViewer"
+      >
+        <button type="button" class="media-close" aria-label="关闭预览" @click="closeMediaViewer">
+          <X />
+        </button>
+        <img
+          v-if="selectedMedia.type === 'image'"
+          :src="selectedMedia.src"
+          alt="文章图片预览"
+          @click.stop
+        />
+        <video
+          v-else
+          :src="selectedMedia.src"
+          controls
+          autoplay
+          @click.stop
+        ></video>
+      </div>
+    </teleport>
   </section>
 </template>
 
@@ -211,6 +240,7 @@ const isSubmittingReply = ref(false)
 const errorMessage = ref('')
 const activeReplyId = ref<number | null>(null)
 const replyContent = ref('')
+const selectedMedia = ref<{ type: 'image' | 'video'; src: string } | null>(null)
 
 const commentForm = ref({
   name: '',
@@ -279,6 +309,29 @@ const commentIndent = (depth: number) => ({
 
 const commentInitial = (name: string) => {
   return String(name || '?').trim().slice(0, 1).toUpperCase() || '?'
+}
+
+const openMediaViewer = (type: 'image' | 'video', src: string) => {
+  if (!src) return
+  selectedMedia.value = { type, src }
+}
+
+const closeMediaViewer = () => {
+  selectedMedia.value = null
+}
+
+const handleArticleContentClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+  if (target?.tagName === 'IMG') {
+    openMediaViewer('image', (target as HTMLImageElement).currentSrc || (target as HTMLImageElement).src)
+  }
+}
+
+const handleArticleContentDoubleClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+  if (target?.tagName === 'VIDEO') {
+    openMediaViewer('video', (target as HTMLVideoElement).currentSrc || (target as HTMLVideoElement).src)
+  }
 }
 
 const normalizeArticle = (payload: unknown): Article | null => {
@@ -487,9 +540,13 @@ useSeoMeta({
   min-height: 62vh;
 }
 
+:global(.paper:has(.article-page)) {
+  width: min(92%, 1320px);
+}
+
 .article-state {
-  background: color-mix(in srgb, var(--theme-surface) 72%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-reading);
+  border: 1px solid var(--border-medium);
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
   padding: 34px;
@@ -503,16 +560,16 @@ useSeoMeta({
 .article-layout {
   align-items: start;
   display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(0, 820px) 240px;
+  gap: 22px;
+  grid-template-columns: minmax(0, 980px) 220px;
   justify-content: center;
   margin: 0 auto;
-  max-width: 1100px;
+  max-width: 1240px;
 }
 
 .article-layout.without-toc {
-  grid-template-columns: minmax(0, 860px);
-  max-width: 900px;
+  grid-template-columns: minmax(0, 1060px);
+  max-width: 1100px;
 }
 
 .article-main {
@@ -526,14 +583,14 @@ useSeoMeta({
 .article-card,
 .comment-section,
 .toc-panel {
-  backdrop-filter: var(--theme-blur) saturate(135%);
-  background: color-mix(in srgb, var(--theme-surface) 58%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  box-shadow: 0 12px 32px var(--theme-shadow);
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--theme-shadow) 62%, rgba(0, 0, 0, 0.18));
 }
 
 .article-card {
+  background: var(--surface-reading);
   overflow: hidden;
   padding: clamp(22px, 3vw, 34px);
   position: relative;
@@ -572,7 +629,7 @@ useSeoMeta({
 }
 
 .article-meta {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -600,8 +657,8 @@ useSeoMeta({
 .comment-actions button,
 .comment-tools button {
   align-items: center;
-  background: color-mix(in srgb, var(--theme-accent) 30%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 24%, var(--border-soft));
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;
@@ -614,7 +671,7 @@ useSeoMeta({
 
 .comment-tools button {
   background: transparent;
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   padding: 7px 10px;
 }
 
@@ -636,8 +693,8 @@ useSeoMeta({
 
 .article-content {
   color: var(--theme-text);
-  font-size: 17px;
-  line-height: 1.86;
+  font-size: 18px;
+  line-height: 1.92;
   overflow-wrap: anywhere;
 }
 
@@ -653,7 +710,7 @@ useSeoMeta({
 }
 
 .article-content :deep(h2) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid var(--border-soft);
   padding-bottom: 8px;
 }
 
@@ -670,29 +727,41 @@ useSeoMeta({
   box-shadow: 0 12px 30px var(--theme-shadow);
   display: block;
   height: auto;
-  margin: 18px auto;
-  max-width: 100%;
+  margin: 24px auto;
+  max-height: min(82vh, 860px);
+  max-width: min(100%, 980px);
+  object-fit: contain;
+  cursor: zoom-in;
 }
 
 .article-content :deep(video) {
+  aspect-ratio: 16 / 9;
+  background: rgba(0, 0, 0, 0.28);
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
   display: block;
-  margin: 18px auto;
-  max-height: 72vh;
-  max-width: 100%;
+  height: auto;
+  margin: 24px auto;
+  max-height: 78vh;
+  max-width: min(100%, 1040px);
+  width: 100%;
+}
+
+.article-content :deep(p:has(> img:only-child)),
+.article-content :deep(p:has(> video:only-child)) {
+  margin: 1.35em 0;
 }
 
 .article-content :deep(blockquote) {
   border-left: 3px solid var(--theme-accent);
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   margin: 18px 0;
   padding: 8px 0 8px 18px;
 }
 
 .article-content :deep(pre) {
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, #000 24%, var(--surface-card));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   overflow: auto;
   padding: 16px;
@@ -725,8 +794,8 @@ useSeoMeta({
 .toc-link {
   background: transparent;
   border: 0;
-  border-left: 2px solid rgba(255, 255, 255, 0.18);
-  color: var(--theme-text-secondary);
+  border-left: 2px solid var(--border-soft);
+  color: var(--readable-muted);
   cursor: pointer;
   display: block;
   font: inherit;
@@ -791,8 +860,8 @@ useSeoMeta({
 .comment-form input,
 .comment-form textarea,
 .reply-form textarea {
-  background: color-mix(in srgb, var(--theme-surface) 45%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--surface-reading) 72%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: var(--theme-text);
   font: inherit;
@@ -803,7 +872,7 @@ useSeoMeta({
 .comment-form input::placeholder,
 .comment-form textarea::placeholder,
 .reply-form textarea::placeholder {
-  color: var(--theme-text-secondary);
+  color: var(--readable-faint);
 }
 
 .comment-actions {
@@ -821,7 +890,7 @@ useSeoMeta({
 .comment-actions span,
 .empty-text,
 .comment-meta span {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .comment-list {
@@ -831,8 +900,8 @@ useSeoMeta({
 }
 
 .comment-item {
-  background: color-mix(in srgb, var(--theme-surface) 46%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--surface-reading) 70%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   margin-left: calc(var(--comment-depth, 0) * 24px);
   padding: 14px;
@@ -860,8 +929,8 @@ useSeoMeta({
 
 .comment-avatar {
   align-items: center;
-  background: color-mix(in srgb, var(--theme-accent) 34%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--theme-accent) 28%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 50%;
   color: var(--theme-text);
   display: inline-flex;
@@ -903,6 +972,52 @@ useSeoMeta({
 .empty-text {
   margin: 0;
   padding: 10px 0;
+}
+
+.media-viewer {
+  align-items: center;
+  background: rgba(5, 8, 16, 0.82);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 48px);
+  position: fixed;
+  z-index: 10000;
+  backdrop-filter: blur(18px);
+}
+
+.media-viewer img,
+.media-viewer video {
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+  max-height: 92vh;
+  max-width: 94vw;
+  object-fit: contain;
+}
+
+.media-viewer video {
+  width: min(94vw, 1180px);
+}
+
+.media-close {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  position: fixed;
+  right: 22px;
+  top: 22px;
+  width: 40px;
+}
+
+.media-close svg {
+  height: 18px;
+  width: 18px;
 }
 
 @media (max-width: 1080px) {

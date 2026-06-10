@@ -77,3 +77,17 @@ model VisitEvent {
   @@index([createdAt], map: "VisitEvent_createdAt_idx")
   @@index([visitorId], map: "VisitEvent_visitorId_idx")
 }
+
+model AboutSegment {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.LongText
+  mood      String?
+  sortOrder Int      @default(0)
+  visible   Boolean  @default(true)
+  posttime  DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+
+  @@map("about_segment")
+  @@index([visible, sortOrder, posttime], map: "AboutSegment_visible_sort_posttime_idx")
+}

@@ -25,6 +25,14 @@
   animation: backgroundDrift 32s ease-in-out infinite alternate;
 }
 
+.ambient-veil {
+  background: var(--ambient-veil);
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
 .background-snapshot {
   background-position: center !important;
   background-repeat: no-repeat !important;

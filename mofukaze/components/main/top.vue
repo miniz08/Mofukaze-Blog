@@ -1,55 +1,38 @@
 <template>
   <div class="top-wrapper">
-    <!-- 全尺寸导航 -->
-    <el-menu
-      v-if="!isMiniNav"
-      :default-active="activeIndex"
-      class="el-menu-demo full-nav"
-      mode="horizontal"
-      @select="handleSelect"
-    >
-      <el-menu-item index="1" @click="redirectToMain">主页</el-menu-item>
-      <el-menu-item 
-        v-if="ifVisible"
-        index="2" 
-        @click="redirectToArticle"
-      >写文章</el-menu-item>
-      <el-menu-item index="5" @click="redirectToArticleListPage">文章/博客</el-menu-item>
-      <el-menu-item index="4" @click="redirectToPicture">我的收藏</el-menu-item>
-      <el-menu-item
-        v-if="ifVisible"
-        index="6"
-        @click="redirectToAdmin"
-      >后台</el-menu-item>
-    </el-menu>
+    <nav v-if="!isMiniNav" class="full-nav" aria-label="主导航">
+      <button class="brand-mark" type="button" @click="goTo('/')">
+        <span>Mofukaze</span>
+        <strong>北风</strong>
+      </button>
 
-    <!-- 迷你导航 -->
+      <div class="nav-links">
+        <button
+          v-for="item in visibleNavItems"
+          :key="item.path"
+          type="button"
+          class="nav-link"
+          :class="{ active: isActive(item) }"
+          @click="goTo(item.path)"
+        >
+          <i :class="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </button>
+      </div>
+    </nav>
+
     <div v-else class="mini-nav">
       <div class="mini-nav-content">
-        <button class="mini-nav-item" @click="redirectToMain" title="主页">
-          <i class="fa-solid fa-house" color="black"></i>
-        </button>
-        <button 
-          v-if="ifVisible"
-          class="mini-nav-item" 
-          @click="redirectToArticle"
-          title="写文章"
-        >
-          <i class="fa-solid fa-pen" color="black"></i>
-        </button>
-        <button class="mini-nav-item" @click="redirectToArticleListPage" title="文章/博客">
-          <i class="fa-solid fa-newspaper" color="black"></i>
-        </button>
-        <button class="mini-nav-item" @click="redirectToPicture" title="我的收藏">
-          <i class="fa-regular fa-heart" color="black"></i>
-        </button>
         <button
-          v-if="ifVisible"
+          v-for="item in visibleNavItems"
+          :key="item.path"
           class="mini-nav-item"
-          @click="redirectToAdmin"
-          title="后台"
+          :class="{ active: isActive(item) }"
+          type="button"
+          :title="item.label"
+          @click="goTo(item.path)"
         >
-          <i class="fa-solid fa-chart-line" color="black"></i>
+          <i :class="item.icon"></i>
         </button>
       </div>
     </div>
@@ -57,30 +40,80 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import {  watch, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-// ⭐ 引入管理员状态
+type NavItem = {
+  label: string
+  path: string
+  icon: string
+  adminOnly?: boolean
+  match: (path: string) => boolean
+}
+
 const admin = useAdmin()
-
-// ⭐ 新的可见性判断（替代 canDelete）
-const ifVisible = computed(() => !!admin.getAuthHeader())
-
 const router = useRouter()
 const route = useRoute()
-const activeIndex = ref('1')
-const isMiniNav = ref(false)
-const scrollThreshold = 300 // 增加阈值，避免在边界位置反复切换
-const scrollHysteresis = 20 // 添加滞后，避免在阈值附近抖动
 
-const handleSelect = (key: string) => {
-  activeIndex.value = key
+const isMiniNav = ref(false)
+const scrollThreshold = 300
+const scrollHysteresis = 20
+const ifVisible = computed(() => admin.isAdmin.value)
+
+const navItems: NavItem[] = [
+  {
+    label: '主页',
+    path: '/',
+    icon: 'fa-solid fa-house',
+    match: (path) => path === '/',
+  },
+  {
+    label: '文章',
+    path: '/articleList',
+    icon: 'fa-solid fa-newspaper',
+    match: (path) => path === '/articleList' || path.startsWith('/List') || path.startsWith('/article/'),
+  },
+  {
+    label: '收藏',
+    path: '/collection',
+    icon: 'fa-regular fa-heart',
+    match: (path) => path === '/collection' || path.startsWith('/collections/'),
+  },
+  {
+    label: '关于',
+    path: '/about',
+    icon: 'fa-regular fa-address-card',
+    match: (path) => path === '/about',
+  },
+  {
+    label: '写文章',
+    path: '/editor',
+    icon: 'fa-solid fa-pen',
+    adminOnly: true,
+    match: (path) => path === '/editor' || path.startsWith('/edit/'),
+  },
+  {
+    label: '后台',
+    path: '/admin',
+    icon: 'fa-solid fa-chart-line',
+    adminOnly: true,
+    match: (path) => path === '/admin',
+  },
+]
+
+const visibleNavItems = computed(() => {
+  return navItems.filter((item) => !item.adminOnly || ifVisible.value)
+})
+
+const isActive = (item: NavItem) => item.match(route.path)
+
+const goTo = (path: string) => {
+  router.push(path)
 }
 
 const handleScroll = () => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-  
+
   if (!isMiniNav.value && scrollTop > scrollThreshold) {
     isMiniNav.value = true
     document.getElementById('content')?.classList.add('scrolled')
@@ -91,136 +124,151 @@ const handleScroll = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  handleScroll() // 初始化检查
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  handleScroll()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
-
-// 页面跳转们~
-const redirectToMain = () => router.push('/')
-const redirectToArticle = () => router.push('/editor')
-const redirectToArticleListPage = () => router.push('/articleList')
-const redirectToPicture = () => router.push('/collection')
-const redirectToAdmin = () => router.push('/admin')
-
-// 路径变化监听
-watch(
-  () => route.path,
-  (newPath) => {
-    if (newPath === '/admin') {
-      activeIndex.value = '6'
-      return
-    }
-
-    switch (newPath) {
-      case '/':
-        activeIndex.value = '1'; break
-      case '/editor':
-        activeIndex.value = '2'; break
-      case '/articleList':
-        activeIndex.value = '5'; break
-      case '/collection':
-        activeIndex.value = '4'; break
-      default:
-        activeIndex.value = '1'
-    }
-  },
-  { immediate: true }
-)
-
 </script>
 
-<style>
-/* 全尺寸导航 - 固定在顶部 */
-.el-menu.full-nav {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  height: 120px;
-  opacity: 1; /* 始终可见 */
-  background-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px) saturate(180%);
-  z-index: 9999;
-  border: 3px solid rgba(255, 255, 255, 0.25);
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(80, 160, 255, 0.2);
-  transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
+<style scoped>
+.full-nav {
   align-items: center;
-}
-
-.el-menu.full-nav:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 8px 25px rgba(80, 160, 255, 0.3);
-}
-
-/* 菜单项样式 */
-.el-menu-item {
-  font-family: "喵字摄影体";
-  font-size: 16px;
-  color: #fff;
-  transition: all 0.3s ease;
-  margin: 0 15px;
-  padding: 8px 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent),
+    var(--surface-floating);
+  border: 1px solid var(--border-medium);
   border-radius: 8px;
-}
-
-.el-menu-item:hover {
-  color: #00bfff;
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-/* 迷你导航 */
-.mini-nav {
+  box-shadow: 0 12px 32px var(--theme-shadow);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: auto minmax(0, 1fr);
+  left: 50%;
+  min-height: 86px;
+  padding: 12px 16px;
   position: fixed;
   top: 20px;
+  transform: translateX(-50%);
+  width: min(86%, 1120px);
+  z-index: 9999;
+  backdrop-filter: blur(16px) saturate(135%);
+}
+
+.full-nav::after {
+  background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
+  bottom: 0;
+  content: "";
+  height: 1px;
+  left: 18px;
+  opacity: 0.55;
+  position: absolute;
+  right: 18px;
+}
+
+.brand-mark,
+.nav-link,
+.mini-nav-item {
+  color: var(--theme-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.brand-mark {
+  background: color-mix(in srgb, var(--surface-reading) 68%, transparent);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 136px;
+  padding: 10px 13px;
+  text-align: left;
+}
+
+.brand-mark span {
+  color: var(--readable-muted);
+  font-size: 12px;
+}
+
+.brand-mark strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.nav-link {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: color-mix(in srgb, var(--theme-accent) 18%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 40%, var(--border-soft));
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  color: color-mix(in srgb, var(--theme-accent) 72%, var(--theme-text));
+}
+
+.mini-nav {
+  animation: fadeInDown 0.3s ease forwards;
   left: 50%;
+  opacity: 0;
+  position: fixed;
+  top: 20px;
   transform: translateX(-50%);
   z-index: 9999;
-  opacity: 0;
-  animation: fadeInDown 0.3s ease forwards;
 }
 
 .mini-nav-content {
+  background: var(--surface-floating);
+  border: 1px solid var(--border-medium);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px var(--theme-shadow);
   display: flex;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
-  padding: 8px 15px;
-  box-shadow: 0 4px 15px rgba(80, 160, 255, 0.2);
+  gap: 8px;
+  padding: 8px 12px;
+  backdrop-filter: blur(16px) saturate(135%);
 }
 
 .mini-nav-item {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  display: flex;
   align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  display: flex;
+  font-size: 17px;
+  height: 38px;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  padding: 0;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  width: 38px;
 }
 
-.mini-nav-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+.mini-nav-item:hover,
+.mini-nav-item.active {
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 42%, var(--border-soft));
+  transform: translateY(-1px);
 }
 
-/* 导航切换动画 */
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -232,13 +280,19 @@ watch(
   }
 }
 
-/* 全尺寸导航淡出动画 */
-.el-menu.full-nav {
-  transition: all 0.3s ease;
-}
+@media (max-width: 760px) {
+  .full-nav {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    width: min(94%, 680px);
+  }
 
-.el-menu.full-nav.fade-out {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-10px);
+  .brand-mark {
+    min-width: 0;
+  }
+
+  .nav-links {
+    justify-content: flex-start;
+  }
 }
 </style>

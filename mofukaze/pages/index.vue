@@ -14,7 +14,6 @@
       >
         <div class="background-image" :style="{ backgroundImage: `url(${article.backgroundImage})` }"></div>
         <div class="content" @click="redirectToArticle(index)">
-          <span class="article-number">{{ String(index + 1).padStart(2, '0') }}</span>
           <div class="article-summary">
             <h2>{{ article.title }}</h2>
             <p>{{ article.content || '这篇文章暂时没有摘要。' }}</p>
@@ -162,7 +161,7 @@ const formatDate = (value: string | Date) => {
 .skeleton-item {
   height: 220px;
   border-radius: 5px;
-  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+  background: linear-gradient(90deg, var(--surface-card) 25%, var(--surface-soft) 37%, var(--surface-card) 63%);
   background-size: 400% 100%;
   animation: shine 1.2s infinite linear;
 }
@@ -181,13 +180,14 @@ const formatDate = (value: string | Date) => {
 
 .article-item {
   cursor: pointer;
-  min-height: 168px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  min-height: 156px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  box-shadow: 0 12px 30px var(--theme-shadow);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--theme-shadow) 65%, rgba(0, 0, 0, 0.18));
   overflow: hidden;
   position: relative;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .background-image {
@@ -209,7 +209,12 @@ const formatDate = (value: string | Date) => {
   width: 100%;
   height: 100%;
   background:
-    linear-gradient(90deg, rgba(8, 12, 22, 0.88) 0%, rgba(8, 12, 22, 0.72) 54%, rgba(8, 12, 22, 0.34) 100%);
+    linear-gradient(
+      90deg,
+      var(--surface-reading) 0%,
+      color-mix(in srgb, var(--surface-reading) 90%, transparent) 58%,
+      color-mix(in srgb, var(--surface-reading) 38%, transparent) 100%
+    );
   transition: all 0.2s ease-in-out;
   opacity: 0.96;
   z-index: 2;
@@ -218,75 +223,69 @@ const formatDate = (value: string | Date) => {
 
 .article-item:hover .background-image::before {
   background:
-    linear-gradient(90deg, rgba(8, 12, 22, 0.92) 0%, rgba(8, 12, 22, 0.62) 48%, rgba(8, 12, 22, 0.18) 100%);
-  opacity: 1;
+    linear-gradient(
+      90deg,
+      var(--surface-reading) 0%,
+      color-mix(in srgb, var(--surface-reading) 78%, transparent) 48%,
+      color-mix(in srgb, var(--surface-reading) 16%, transparent) 100%
+    );
+  opacity: 0.96;
   transition: all 0.8s ease-in-out;
 }
 
 .content {
   align-items: center;
   color: var(--theme-text);
-  display: grid;
-  gap: 18px;
-  grid-template-columns: 58px minmax(0, 1fr);
-  min-height: 168px;
-  padding: 22px;
+  display: flex;
+  min-height: 156px;
+  padding: 20px 22px;
   position: relative;
   z-index: 3;
 }
 
-.article-number {
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
-  color: var(--theme-accent);
-  display: inline-flex;
-  font-size: 18px;
-  height: 58px;
-  justify-content: center;
-  width: 58px;
-}
-
 .article-summary {
   min-width: 0;
+  width: min(760px, 78%);
 }
 
 .article-summary h2 {
-  font-size: clamp(22px, 3vw, 32px);
+  color: var(--theme-text);
+  font-size: clamp(21px, 2.8vw, 31px);
   line-height: 1.2;
   margin: 0 0 8px;
 }
 
 .article-summary p {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   line-height: 1.7;
   margin: 0;
   max-width: 760px;
 }
 
 .article-summary time {
-  color: var(--theme-accent);
+  color: color-mix(in srgb, var(--theme-accent) 76%, var(--theme-text));
   display: inline-block;
   font-size: 13px;
   margin-top: 12px;
 }
 
 .article-item:hover {
-  transform: scale(1.02);
+  border-color: color-mix(in srgb, var(--theme-accent) 34%, var(--border-soft));
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--theme-shadow) 72%, rgba(0, 0, 0, 0.22));
+  transform: translateY(-2px);
 }
 
 .article-item:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
 @media (max-width: 640px) {
   .content {
-    grid-template-columns: 1fr;
+    padding: 18px;
   }
 
-  .article-number {
-    height: 42px;
-    width: 42px;
+  .article-summary {
+    width: 100%;
   }
 }
 </style>

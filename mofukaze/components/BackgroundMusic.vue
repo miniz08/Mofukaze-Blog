@@ -199,7 +199,7 @@ onMounted(async () => {
 .icon-button,
 .play-button {
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid var(--border-medium);
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;
@@ -210,24 +210,24 @@ onMounted(async () => {
 }
 
 .music-toggle {
-  background: color-mix(in srgb, var(--theme-accent) 28%, var(--theme-surface));
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-floating));
   box-shadow: 0 10px 26px var(--theme-shadow);
   height: 46px;
   width: 46px;
-  backdrop-filter: var(--theme-blur) saturate(145%);
+  backdrop-filter: blur(16px) saturate(135%);
 }
 
 .music-toggle:hover,
 .icon-button:hover:not(:disabled),
 .play-button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--theme-accent) 42%, var(--theme-surface));
+  background: color-mix(in srgb, var(--theme-accent) 36%, var(--surface-floating));
   box-shadow: 0 10px 26px var(--theme-glow);
   transform: translateY(-1px);
 }
 
 .music-panel {
-  background: color-mix(in srgb, var(--theme-surface) 58%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-floating);
+  border: 1px solid var(--border-medium);
   border-radius: 8px;
   bottom: 58px;
   box-shadow: 0 18px 46px var(--theme-shadow);
@@ -239,7 +239,7 @@ onMounted(async () => {
   position: absolute;
   right: 0;
   width: min(340px, calc(100vw - 34px));
-  backdrop-filter: var(--theme-blur) saturate(145%);
+  backdrop-filter: blur(16px) saturate(135%);
 }
 
 .music-panel header {
@@ -251,7 +251,7 @@ onMounted(async () => {
 
 .track-art {
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-soft);
   border-radius: 8px;
   display: flex;
   height: 48px;
@@ -283,7 +283,7 @@ onMounted(async () => {
 
 .track-copy span,
 .track-list small {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   font-size: 12px;
 }
 
@@ -296,7 +296,7 @@ onMounted(async () => {
 
 .icon-button,
 .play-button {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-soft);
   height: 34px;
   padding: 0;
   width: 34px;
@@ -335,8 +335,8 @@ onMounted(async () => {
 }
 
 .track-list button {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;

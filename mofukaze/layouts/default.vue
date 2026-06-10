@@ -8,6 +8,7 @@
         :style="{ background: previousBackground }"
       ></div>
     </div>
+    <div class="ambient-veil" aria-hidden="true"></div>
 <div class="midnight-meteors" aria-hidden="true">
   <span style="--top: -12vh; --left: 92vw; --tail: 220px; --duration: 6.5s; --delay: -0.6s;"></span>
 

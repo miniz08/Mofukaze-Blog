@@ -29,4 +29,21 @@ html, body {
   --theme-shadow: rgba(80,160,255,0.18);
   --theme-glow: rgba(100,180,255,0.28);
   --theme-overlay: linear-gradient(45deg, rgba(138,43,226,0.1), rgba(30,144,255,0.1));
+  --surface-reading: rgba(11, 18, 30, 0.9);
+  --surface-page: rgba(12, 18, 31, 0.84);
+  --surface-card: rgba(15, 23, 42, 0.78);
+  --surface-soft: rgba(255, 255, 255, 0.075);
+  --surface-glass: rgba(18, 26, 42, 0.56);
+  --surface-floating: rgba(13, 20, 34, 0.68);
+  --border-soft: rgba(255, 255, 255, 0.14);
+  --border-medium: rgba(255, 255, 255, 0.22);
+  --readable-muted: color-mix(in srgb, var(--theme-text) 70%, transparent);
+  --readable-faint: color-mix(in srgb, var(--theme-text) 48%, transparent);
+  --ambient-veil: linear-gradient(
+    180deg,
+    rgba(5, 8, 16, 0.46) 0%,
+    rgba(5, 8, 16, 0.36) 42%,
+    rgba(5, 8, 16, 0.54) 100%
+  );
+  --content-shadow: 0 18px 52px rgba(0, 0, 0, 0.24);
 }

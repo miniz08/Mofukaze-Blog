@@ -1,4 +1,53 @@
 /* assets/css/themes.css */
+.theme-starlight {
+  --surface-reading: rgba(9, 15, 28, 0.91);
+  --surface-page: rgba(10, 17, 30, 0.84);
+  --surface-card: rgba(13, 21, 36, 0.78);
+  --surface-soft: rgba(255, 255, 255, 0.075);
+  --surface-glass: rgba(15, 23, 38, 0.56);
+  --surface-floating: rgba(13, 20, 34, 0.68);
+  --border-soft: rgba(255, 255, 255, 0.13);
+  --border-medium: rgba(255, 255, 255, 0.22);
+  --ambient-veil: linear-gradient(180deg, rgba(3, 7, 18, 0.54), rgba(3, 7, 18, 0.35) 42%, rgba(3, 7, 18, 0.62));
+}
+
+.theme-sakura {
+  --surface-reading: rgba(255, 250, 252, 0.94);
+  --surface-page: rgba(255, 247, 251, 0.86);
+  --surface-card: rgba(255, 250, 252, 0.82);
+  --surface-soft: rgba(255, 255, 255, 0.56);
+  --surface-glass: rgba(255, 250, 252, 0.54);
+  --surface-floating: rgba(255, 250, 252, 0.72);
+  --border-soft: rgba(97, 64, 82, 0.14);
+  --border-medium: rgba(97, 64, 82, 0.22);
+  --ambient-veil: linear-gradient(180deg, rgba(255, 245, 248, 0.34), rgba(255, 244, 248, 0.18) 42%, rgba(255, 247, 250, 0.5));
+  --content-shadow: 0 18px 46px rgba(112, 82, 96, 0.16);
+}
+
+.theme-aurora {
+  --surface-reading: rgba(2, 18, 27, 0.92);
+  --surface-page: rgba(3, 19, 31, 0.86);
+  --surface-card: rgba(4, 25, 35, 0.8);
+  --surface-soft: rgba(224, 255, 255, 0.07);
+  --surface-glass: rgba(2, 26, 34, 0.58);
+  --surface-floating: rgba(2, 22, 32, 0.7);
+  --border-soft: rgba(224, 255, 255, 0.13);
+  --border-medium: rgba(224, 255, 255, 0.22);
+  --ambient-veil: linear-gradient(180deg, rgba(0, 10, 18, 0.58), rgba(0, 16, 22, 0.34) 42%, rgba(0, 10, 18, 0.64));
+}
+
+.theme-midnight {
+  --surface-reading: rgba(15, 23, 42, 0.93);
+  --surface-page: rgba(15, 23, 42, 0.88);
+  --surface-card: rgba(20, 30, 52, 0.82);
+  --surface-soft: rgba(241, 245, 249, 0.07);
+  --surface-glass: rgba(20, 30, 52, 0.6);
+  --surface-floating: rgba(15, 23, 42, 0.74);
+  --border-soft: rgba(241, 245, 249, 0.13);
+  --border-medium: rgba(241, 245, 249, 0.22);
+  --ambient-veil: linear-gradient(180deg, rgba(2, 6, 23, 0.46), rgba(2, 6, 23, 0.28) 42%, rgba(2, 6, 23, 0.62));
+}
+
 .theme-starlight #background::before {
   opacity: 0.78;
 }

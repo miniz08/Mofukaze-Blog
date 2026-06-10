@@ -178,8 +178,8 @@ onMounted(async () => {
 }
 
 .add-button {
-  background: color-mix(in srgb, var(--theme-accent) 30%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 24%, var(--border-soft));
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;
@@ -196,11 +196,10 @@ onMounted(async () => {
 
 .collection-state,
 .collection-section {
-  background: color-mix(in srgb, var(--theme-surface) 70%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  box-shadow: 0 12px 32px var(--theme-shadow);
-  backdrop-filter: var(--theme-blur) saturate(145%);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--theme-shadow) 58%, rgba(0, 0, 0, 0.16));
 }
 
 .collection-state {
@@ -233,7 +232,7 @@ onMounted(async () => {
 
 .section-copy p,
 .empty-text {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
   line-height: 1.7;
 }
 
@@ -244,8 +243,8 @@ onMounted(async () => {
 }
 
 .cover-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: color-mix(in srgb, var(--surface-reading) 46%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: var(--theme-text);
   cursor: pointer;
@@ -260,14 +259,14 @@ onMounted(async () => {
 }
 
 .cover-card:hover {
-  background: color-mix(in srgb, var(--theme-accent) 18%, rgba(255, 255, 255, 0.08));
+  background: color-mix(in srgb, var(--theme-accent) 16%, var(--surface-card));
   box-shadow: 0 10px 24px var(--theme-shadow);
   transform: translateY(-3px);
 }
 
 .cover-card img {
   aspect-ratio: 3 / 4;
-  background: rgba(0, 0, 0, 0.18);
+  background: color-mix(in srgb, #000 18%, var(--surface-card));
   border-radius: 6px;
   height: auto;
   object-fit: cover;

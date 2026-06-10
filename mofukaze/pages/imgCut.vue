@@ -345,8 +345,8 @@ onBeforeUnmount(() => {
 
 .meta-grid input,
 :deep(.tag-select .el-select__wrapper) {
-  background: color-mix(in srgb, var(--theme-surface) 70%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--surface-reading) 72%, var(--surface-soft));
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   box-shadow: none;
   color: var(--theme-text);
@@ -365,8 +365,8 @@ onBeforeUnmount(() => {
 
 .cover-strip {
   align-items: center;
-  background: color-mix(in srgb, var(--theme-surface) 68%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   display: grid;
   gap: 14px;
@@ -403,8 +403,8 @@ button {
 .cover-strip button,
 .cropper-toolbar button,
 .cropper-actions button {
-  background: color-mix(in srgb, var(--theme-accent) 28%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: color-mix(in srgb, var(--theme-accent) 24%, var(--surface-soft));
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 24%, var(--border-soft));
   color: var(--theme-text);
   padding: 10px 14px;
   transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
@@ -416,7 +416,7 @@ button {
 .cropper-toolbar button:hover,
 .cropper-toolbar button.active,
 .cropper-actions button:hover {
-  background: color-mix(in srgb, var(--theme-accent) 42%, transparent);
+  background: color-mix(in srgb, var(--theme-accent) 34%, var(--surface-soft));
   box-shadow: 0 8px 22px var(--theme-shadow);
   transform: translateY(-1px);
 }
@@ -458,7 +458,7 @@ button {
 .cropper-source {
   align-items: center;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px dashed rgba(255, 255, 255, 0.24);
+  border: 1px dashed var(--border-medium);
   border-radius: 8px;
   display: flex;
   justify-content: center;
@@ -472,7 +472,7 @@ button {
 }
 
 .cropper-empty {
-  color: var(--theme-text-secondary);
+  color: var(--readable-muted);
 }
 
 .cropper-preview-wrap {
@@ -495,11 +495,10 @@ button {
 }
 
 :deep(.el-dialog) {
-  background: color-mix(in srgb, var(--theme-surface) 88%, var(--theme-background));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-reading);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   color: var(--theme-text);
-  backdrop-filter: var(--theme-blur) saturate(145%);
 }
 
 :deep(.el-dialog__title),

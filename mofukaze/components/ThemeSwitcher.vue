@@ -102,9 +102,9 @@ onUnmounted(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-floating);
+  backdrop-filter: blur(16px) saturate(135%);
+  border: 1px solid var(--border-medium);
   border-radius: 20px;
   color: var(--theme-text);
   font-size: 14px;
@@ -113,7 +113,7 @@ onUnmounted(() => {
 }
 
 .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: color-mix(in srgb, var(--theme-accent) 20%, var(--surface-floating));
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -136,9 +136,9 @@ onUnmounted(() => {
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background: var(--theme-surface);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface-floating);
+  backdrop-filter: blur(16px) saturate(135%);
+  border: 1px solid var(--border-medium);
   border-radius: 12px;
   padding: 8px;
   min-width: 200px;
@@ -157,13 +157,13 @@ onUnmounted(() => {
 }
 
 .theme-option:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-soft);
   transform: translateX(2px);
 }
 
 .theme-option.active {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--theme-accent) 18%, var(--surface-soft));
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 38%, var(--border-soft));
 }
 
 .theme-preview {
@@ -204,6 +204,5 @@ onUnmounted(() => {
   transform: translateY(-10px) scale(0.95);
 }
 </style>
-
 
 
