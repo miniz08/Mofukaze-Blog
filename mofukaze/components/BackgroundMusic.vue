@@ -4,6 +4,18 @@
       <Music2 />
     </button>
 
+    <audio
+      ref="audioRef"
+      :src="currentSrc"
+      preload="metadata"
+      @play="isPlaying = true"
+      @pause="isPlaying = false"
+      @ended="handleEnded"
+      @loadedmetadata="syncAudioState"
+      @durationchange="syncAudioState"
+      @timeupdate="handleTimeUpdate"
+    ></audio>
+
     <transition name="music-panel">
       <section v-if="isOpen" class="music-panel" aria-label="背景音乐">
         <header>
@@ -22,24 +34,37 @@
           </button>
         </header>
 
-        <audio
-          ref="audioRef"
-          :src="currentSrc"
-          preload="metadata"
-          @play="isPlaying = true"
-          @pause="isPlaying = false"
-          @ended="nextTrack"
-        ></audio>
+        <div class="progress-row">
+          <span>{{ formatTime(currentTime) }}</span>
+          <input
+            class="progress-slider"
+            type="range"
+            min="0"
+            :max="duration || 0"
+            step="1"
+            :value="currentTime"
+            :disabled="!tracks.length || !duration"
+            aria-label="播放进度"
+            @input="seekTo"
+            @pointerdown="isSeeking = true"
+            @pointerup="finishSeeking"
+            @pointercancel="isSeeking = false"
+            @change="finishSeeking"
+            @keydown.left.prevent="nudgeSeek(-5)"
+            @keydown.right.prevent="nudgeSeek(5)"
+          />
+          <span>{{ formatTime(duration) }}</span>
+        </div>
 
         <div class="music-controls">
-          <button class="icon-button" type="button" title="上一首" :disabled="!tracks.length" @click="prevTrack">
+          <button class="icon-button" type="button" title="上一首" :disabled="!tracks.length" @click="prevTrack()">
             <SkipBack />
           </button>
           <button class="play-button" type="button" title="播放/暂停" :disabled="!tracks.length" @click="togglePlay">
             <Pause v-if="isPlaying" />
             <Play v-else />
           </button>
-          <button class="icon-button" type="button" title="下一首" :disabled="!tracks.length" @click="nextTrack">
+          <button class="icon-button" type="button" title="下一首" :disabled="!tracks.length" @click="nextTrack()">
             <SkipForward />
           </button>
           <Volume2 />
@@ -83,7 +108,10 @@ const tracks = ref<MusicTrack[]>([])
 const currentIndex = ref(0)
 const isOpen = ref(false)
 const isPlaying = ref(false)
+const isSeeking = ref(false)
 const volume = ref(0.56)
+const currentTime = ref(0)
+const duration = ref(0)
 const audioRef = ref<HTMLAudioElement | null>(null)
 
 const currentTrack = computed(() => tracks.value[currentIndex.value] || null)
@@ -132,6 +160,47 @@ const syncVolume = () => {
   window.localStorage.setItem(MUSIC_VOLUME_KEY, String(volume.value))
 }
 
+const getSafeTime = (value: number) => Number.isFinite(value) && value > 0 ? value : 0
+
+const syncAudioState = () => {
+  if (!audioRef.value) return
+  duration.value = getSafeTime(audioRef.value.duration)
+  currentTime.value = getSafeTime(audioRef.value.currentTime)
+}
+
+const handleTimeUpdate = () => {
+  if (isSeeking.value || !audioRef.value) return
+  currentTime.value = getSafeTime(audioRef.value.currentTime)
+}
+
+const seekTo = (event: Event) => {
+  const nextTime = Number((event.target as HTMLInputElement).value)
+  currentTime.value = getSafeTime(nextTime)
+
+  if (audioRef.value && Number.isFinite(nextTime)) {
+    audioRef.value.currentTime = nextTime
+  }
+}
+
+const finishSeeking = (event: Event) => {
+  seekTo(event)
+  isSeeking.value = false
+}
+
+const nudgeSeek = (seconds: number) => {
+  if (!audioRef.value || !duration.value) return
+  const nextTime = Math.min(Math.max(audioRef.value.currentTime + seconds, 0), duration.value)
+  audioRef.value.currentTime = nextTime
+  currentTime.value = nextTime
+}
+
+const formatTime = (seconds: number) => {
+  const total = Math.floor(getSafeTime(seconds))
+  const minutes = Math.floor(total / 60)
+  const rest = total % 60
+  return `${minutes}:${String(rest).padStart(2, '0')}`
+}
+
 const playCurrent = async () => {
   await nextTick()
   try {
@@ -153,28 +222,48 @@ const togglePlay = async () => {
 }
 
 const selectTrack = async (index: number) => {
-  currentIndex.value = index
-  if (isPlaying.value) {
+  await switchTrack(index, isPlaying.value)
+}
+
+const switchTrack = async (index: number, shouldPlay = isPlaying.value) => {
+  if (!tracks.value.length) return
+
+  const nextIndex = (index + tracks.value.length) % tracks.value.length
+  const isSameTrack = nextIndex === currentIndex.value
+
+  currentIndex.value = nextIndex
+  currentTime.value = 0
+  duration.value = 0
+
+  await nextTick()
+
+  if (isSameTrack && audioRef.value) {
+    audioRef.value.currentTime = 0
+  }
+
+  if (shouldPlay) {
     await playCurrent()
   }
 }
 
-const nextTrack = async () => {
-  if (!tracks.value.length) return
-  currentIndex.value = (currentIndex.value + 1) % tracks.value.length
-  if (isPlaying.value) await playCurrent()
+const nextTrack = async (shouldPlay = isPlaying.value) => {
+  await switchTrack(currentIndex.value + 1, shouldPlay)
 }
 
-const prevTrack = async () => {
-  if (!tracks.value.length) return
-  currentIndex.value = (currentIndex.value - 1 + tracks.value.length) % tracks.value.length
-  if (isPlaying.value) await playCurrent()
+const prevTrack = async (shouldPlay = isPlaying.value) => {
+  await switchTrack(currentIndex.value - 1, shouldPlay)
+}
+
+const handleEnded = async () => {
+  await nextTrack(true)
 }
 
 watch(volume, syncVolume)
 
 watch(currentIndex, (index) => {
   window.localStorage.setItem(MUSIC_INDEX_KEY, String(index))
+  currentTime.value = 0
+  duration.value = 0
 })
 
 onMounted(async () => {
@@ -294,6 +383,20 @@ onMounted(async () => {
   grid-template-columns: 34px 42px 34px 18px minmax(0, 1fr);
 }
 
+.progress-row {
+  align-items: center;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+}
+
+.progress-row span {
+  color: var(--readable-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
 .icon-button,
 .play-button {
   background: var(--surface-soft);
@@ -321,9 +424,15 @@ onMounted(async () => {
   width: 18px;
 }
 
-.music-controls input {
+.music-controls input,
+.progress-slider {
   accent-color: var(--theme-accent);
   min-width: 0;
+}
+
+.progress-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .track-list {
