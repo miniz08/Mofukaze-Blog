@@ -87,7 +87,7 @@
     <button
       @click="editor.chain().focus().toggleCodeBlock().run()"
       :class="{ 'is-active': editor.isActive('codeBlock') }"
-      title="代码块"
+      title="代码块（Shift+Enter 在代码块内换行）"
     >
       <Code size="13" />
     </button>
@@ -342,6 +342,14 @@ const CustomShortcuts = Extension.create({
       'Mod-o': () => this.editor.chain().focus().toggleOrderedList().run(),
       'Mod-n': () => this.editor.chain().focus().toggleBulletList().run(),
       'Mod-Shift-c': () => this.editor.chain().focus().toggleCodeBlock().run(),
+      Enter: () => {
+        if (!this.editor.isActive('codeBlock')) return false
+        return this.editor.commands.exitCode()
+      },
+      'Shift-Enter': () => {
+        if (!this.editor.isActive('codeBlock')) return false
+        return this.editor.commands.insertContent('\n')
+      },
       'Mod-Shift-l': () => openLatexInput(),
       'Mod-l': () => {
       const url = prompt("请输入链接 URL 💡")

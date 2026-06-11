@@ -22,15 +22,23 @@ model Comment {
   collectionId Int?
   collection   Collection? @relation(fields: [collectionId], references: [id], map: "Comment_collectionId_fkey")
 
+  momentId     Int?
+  moment       AboutSegment? @relation(fields: [momentId], references: [id], onDelete: SetNull, map: "Comment_momentId_fkey")
+
   parentId     Int?
   parent       Comment?    @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull, map: "Comment_parentId_fkey")
   replies      Comment[]   @relation("CommentReplies")
 
   status       String      @default("approved")
+  ipLocation   String?
+  userAgent    String?     @db.VarChar(512)
+  browser      String?     @db.VarChar(96)
+  os           String?     @db.VarChar(96)
 
   @@map("comment")
   @@index([articleId], map: "Comment_articleId_fkey")
   @@index([collectionId], map: "Comment_collectionId_fkey")
+  @@index([momentId], map: "Comment_momentId_idx")
   @@index([parentId], map: "Comment_parentId_fkey")
 }
 
@@ -88,6 +96,7 @@ model AboutSegment {
   visible   Boolean  @default(true)
   posttime  DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
   updatedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @db.DateTime(3)
+  comments  Comment[]
 
   @@map("about_segment")
   @@index([kind, visible, posttime], map: "AboutSegment_kind_visible_posttime_idx")

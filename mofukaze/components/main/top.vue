@@ -19,6 +19,37 @@
         </div>
       </div>
 
+      <div class="search-shell">
+        <form class="nav-search" role="search" @submit.prevent="submitSearch">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            v-model.trim="searchQuery"
+            type="search"
+            placeholder="搜索文章 / 动态"
+            @focus="isSearchFocused = true"
+          />
+          <button v-if="searchQuery" type="button" title="清空搜索" @click="clearSearch">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </form>
+        <div v-if="showSearchPanel" class="search-panel">
+          <p v-if="isSearching">搜索中...</p>
+          <p v-else-if="!flatSearchResults.length">没有找到相关内容</p>
+          <template v-else>
+            <button
+              v-for="result in flatSearchResults"
+              :key="`${result.type}-${result.id}`"
+              type="button"
+              @mousedown.prevent="goSearchResult(result)"
+            >
+              <span>{{ result.type === 'article' ? '文章' : '动态' }}</span>
+              <strong>{{ result.title }}</strong>
+              <small>{{ result.summary || result.meta || '没有摘要' }}</small>
+            </button>
+          </template>
+        </div>
+      </div>
+
       <div class="nav-links">
         <button
           v-for="item in visibleNavItems"
@@ -47,13 +78,52 @@
         >
           <i :class="item.icon"></i>
         </button>
+        <button
+          class="mini-nav-item"
+          :class="{ active: isMiniSearchOpen }"
+          type="button"
+          title="搜索"
+          @click="toggleMiniSearch"
+        >
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </div>
+      <div v-if="isMiniSearchOpen" class="search-shell mini-search-shell">
+        <form class="nav-search" role="search" @submit.prevent="submitSearch">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            v-model.trim="searchQuery"
+            type="search"
+            placeholder="搜索文章 / 动态"
+            @focus="isSearchFocused = true"
+          />
+          <button v-if="searchQuery" type="button" title="清空搜索" @click="clearSearch">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </form>
+        <div v-if="showSearchPanel" class="search-panel">
+          <p v-if="isSearching">搜索中...</p>
+          <p v-else-if="!flatSearchResults.length">没有找到相关内容</p>
+          <template v-else>
+            <button
+              v-for="result in flatSearchResults"
+              :key="`${result.type}-${result.id}`"
+              type="button"
+              @mousedown.prevent="goSearchResult(result)"
+            >
+              <span>{{ result.type === 'article' ? '文章' : '动态' }}</span>
+              <strong>{{ result.title }}</strong>
+              <small>{{ result.summary || result.meta || '没有摘要' }}</small>
+            </button>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 type NavItem = {
@@ -64,13 +134,30 @@ type NavItem = {
   match: (path: string) => boolean
 }
 
+type SearchResult = {
+  type: 'article' | 'moment'
+  id: number
+  title: string
+  summary?: string
+  meta?: string
+}
+
 const admin = useAdmin()
 const router = useRouter()
 const route = useRoute()
 
 const isMiniNav = ref(false)
+const isMiniSearchOpen = ref(false)
+const isSearchFocused = ref(false)
+const isSearching = ref(false)
+const searchQuery = ref('')
+const searchResults = ref<{ articles: SearchResult[]; moments: SearchResult[] }>({
+  articles: [],
+  moments: [],
+})
 const scrollHysteresis = 12
 const ifVisible = computed(() => admin.isAdmin.value)
+let searchTimer = 0
 
 const socialLinks = [
   { label: 'GitHub', icon: 'fa-brands fa-github', href: '' },
@@ -129,10 +216,74 @@ const visibleNavItems = computed(() => {
   return navItems.filter((item) => !item.adminOnly || ifVisible.value)
 })
 
+const flatSearchResults = computed(() => [
+  ...searchResults.value.articles,
+  ...searchResults.value.moments,
+])
+
+const showSearchPanel = computed(() => {
+  return isSearchFocused.value && searchQuery.value.trim().length >= 2
+})
+
 const isActive = (item: NavItem) => item.match(route.path)
 
 const goTo = (path: string) => {
   router.push(path)
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+  searchResults.value = { articles: [], moments: [] }
+}
+
+const runSearch = async () => {
+  const keyword = searchQuery.value.trim()
+  if (keyword.length < 2) {
+    searchResults.value = { articles: [], moments: [] }
+    return
+  }
+
+  isSearching.value = true
+  try {
+    const res: any = await $fetch('/api/posts/search/content', {
+      method: 'GET',
+      query: { q: keyword, limit: 5 },
+    })
+    const data = res?.data || {}
+    searchResults.value = {
+      articles: Array.isArray(data.articles) ? data.articles : [],
+      moments: Array.isArray(data.moments) ? data.moments : [],
+    }
+  } catch (error) {
+    console.warn('[nav-search] search failed', error)
+    searchResults.value = { articles: [], moments: [] }
+  } finally {
+    isSearching.value = false
+  }
+}
+
+const submitSearch = () => {
+  const firstResult = flatSearchResults.value[0]
+  if (firstResult) {
+    goSearchResult(firstResult)
+    return
+  }
+  runSearch()
+}
+
+const goSearchResult = (result: SearchResult) => {
+  isSearchFocused.value = false
+  isMiniSearchOpen.value = false
+  if (result.type === 'article') {
+    router.push(`/article/${result.id}`)
+    return
+  }
+  router.push({ path: '/moments', query: { moment: result.id } })
+}
+
+const toggleMiniSearch = () => {
+  isMiniSearchOpen.value = !isMiniSearchOpen.value
+  isSearchFocused.value = isMiniSearchOpen.value
 }
 
 const openSocial = (href: string) => {
@@ -158,12 +309,18 @@ const handleScroll = () => {
 
   if (!isMiniNav.value && scrollTop > scrollThreshold) {
     isMiniNav.value = true
+    isMiniSearchOpen.value = false
     document.getElementById('content')?.classList.add('scrolled')
   } else if (isMiniNav.value && scrollTop < scrollThreshold - scrollHysteresis) {
     isMiniNav.value = false
     document.getElementById('content')?.classList.remove('scrolled')
   }
 }
+
+watch(searchQuery, () => {
+  window.clearTimeout(searchTimer)
+  searchTimer = window.setTimeout(runSearch, 220)
+})
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
@@ -174,6 +331,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', handleScroll)
+  window.clearTimeout(searchTimer)
 })
 </script>
 
@@ -187,15 +345,15 @@ onUnmounted(() => {
   border-radius: 8px;
   box-shadow: 0 12px 32px var(--theme-shadow);
   display: grid;
-  gap: 18px;
-  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  grid-template-columns: auto minmax(220px, 340px) minmax(0, 1fr);
   left: 50%;
-  min-height: 86px;
-  padding: 12px 16px;
+  min-height: 76px;
+  padding: 10px 14px;
   position: fixed;
   top: 20px;
   transform: translateX(-50%);
-  width: min(86%, 1120px);
+  width: min(88%, 1180px);
   z-index: 9999;
   backdrop-filter: blur(16px) saturate(135%);
 }
@@ -230,7 +388,7 @@ onUnmounted(() => {
 .brand-name {
   background: transparent;
   border: 0;
-  font-size: clamp(22px, 2.3vw, 30px);
+  font-size: clamp(20px, 2vw, 26px);
   font-weight: 800;
   line-height: 1;
   padding: 0;
@@ -243,18 +401,130 @@ onUnmounted(() => {
   gap: 7px;
 }
 
+.search-shell {
+  min-width: 0;
+  position: relative;
+}
+
+.nav-search {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface-soft) 72%, transparent);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 38px;
+  padding: 0 11px;
+  transition: background 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+}
+
+.nav-search:focus-within {
+  background: color-mix(in srgb, var(--surface-reading) 62%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 46%, var(--border-soft));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--theme-shadow) 56%, transparent);
+}
+
+.nav-search i {
+  color: var(--readable-muted);
+  font-size: 13px;
+}
+
+.nav-search input {
+  background: transparent;
+  border: 0;
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 14px;
+  min-width: 0;
+  outline: 0;
+}
+
+.nav-search input::placeholder {
+  color: var(--readable-faint);
+}
+
+.nav-search button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--readable-muted);
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.search-panel {
+  background: var(--surface-floating);
+  border: 1px solid var(--border-medium);
+  border-radius: 8px;
+  box-shadow: 0 14px 36px var(--theme-shadow);
+  display: grid;
+  gap: 6px;
+  left: 0;
+  max-height: min(420px, calc(100vh - 140px));
+  overflow: auto;
+  padding: 8px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 10000;
+  backdrop-filter: blur(16px) saturate(135%);
+}
+
+.search-panel p {
+  color: var(--readable-muted);
+  font-size: 13px;
+  margin: 0;
+  padding: 10px;
+}
+
+.search-panel button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--theme-text);
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+  padding: 9px;
+  text-align: left;
+}
+
+.search-panel button:hover {
+  background: color-mix(in srgb, var(--theme-accent) 14%, var(--surface-soft));
+  border-color: color-mix(in srgb, var(--theme-accent) 34%, var(--border-soft));
+}
+
+.search-panel span {
+  color: var(--theme-accent);
+  font-size: 12px;
+}
+
+.search-panel strong {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.search-panel small {
+  color: var(--readable-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .social-link {
   align-items: center;
   background: color-mix(in srgb, var(--surface-soft) 72%, transparent);
   border: 1px solid var(--border-soft);
   border-radius: 50%;
   display: inline-flex;
-  font-size: 15px;
-  height: 34px;
+  font-size: 14px;
+  height: 31px;
   justify-content: center;
   padding: 0;
   transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, color 0.25s ease;
-  width: 34px;
+  width: 31px;
 }
 
 .social-link:hover {
@@ -278,8 +548,9 @@ onUnmounted(() => {
   border-radius: 8px;
   display: inline-flex;
   gap: 8px;
-  min-height: 40px;
-  padding: 8px 12px;
+  font-size: 14px;
+  min-height: 36px;
+  padding: 7px 10px;
   transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
@@ -315,18 +586,23 @@ onUnmounted(() => {
   backdrop-filter: blur(16px) saturate(135%);
 }
 
+.mini-search-shell {
+  margin-top: 10px;
+  width: min(92vw, 420px);
+}
+
 .mini-nav-item {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 50%;
   display: flex;
-  font-size: 17px;
-  height: 38px;
+  font-size: 16px;
+  height: 35px;
   justify-content: center;
   padding: 0;
   transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-  width: 38px;
+  width: 35px;
 }
 
 .mini-nav-item:hover,

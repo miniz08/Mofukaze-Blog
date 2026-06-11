@@ -52,7 +52,7 @@
           <span>{{ formatYearMonth(moment.posttime) }}</span>
         </aside>
 
-        <div class="moment-body">
+        <div class="moment-body" :id="`moment-${moment.id}`">
           <header class="moment-header">
             <div>
               <p>{{ moment.mood || '随记' }}</p>
@@ -61,7 +61,21 @@
             <time :datetime="moment.posttime">{{ formatDateTime(moment.posttime) }}</time>
           </header>
 
-          <div class="moment-content" v-html="moment.content"></div>
+          <div class="moment-content" v-html="decorateCodeBlocks(moment.content)"></div>
+
+          <div class="moment-footer">
+            <button type="button" class="comment-toggle" @click="toggleMomentComments(moment.id)">
+              {{ activeCommentMomentId === moment.id ? '收起评论' : '查看评论' }}
+            </button>
+          </div>
+
+          <CommentSection
+            v-if="activeCommentMomentId === moment.id"
+            class="moment-comments"
+            :target-id="moment.id"
+            target-type="moment"
+            title="动态评论"
+          />
 
           <div v-if="ifVisible" class="moment-admin-actions">
             <button type="button" @click="startEdit(moment)">编辑</button>
@@ -78,8 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import Editor from '~/components/editor/editor.vue'
+import { decorateCodeBlocks } from '~/utils/richContent'
 
 type MomentSegment = {
   id: number
@@ -94,6 +109,7 @@ type MomentSegment = {
 }
 
 const admin = useAdmin()
+const route = useRoute()
 const ifVisible = computed(() => admin.isAdmin.value)
 const isLoading = ref(true)
 const isSubmitting = ref(false)
@@ -102,6 +118,7 @@ const errorMessage = ref('')
 const moments = ref<MomentSegment[]>([])
 const editorRef = ref<InstanceType<typeof Editor> | null>(null)
 const editingId = ref<number | null>(null)
+const activeCommentMomentId = ref<number | null>(null)
 
 const emptyContent = '<p></p>'
 
@@ -122,6 +139,22 @@ const richTextToPlain = (html: string) => {
 
 const hasMedia = (html: string) => /<(img|video)\b/i.test(html)
 const hasLocalResource = (html: string) => /(?:blob:|data:image|data:video)/i.test(html)
+
+const scrollToMomentFromQuery = async () => {
+  const momentId = Number(route.query.moment)
+  if (!Number.isFinite(momentId) || momentId <= 0) return
+
+  activeCommentMomentId.value = momentId
+  await nextTick()
+  document.getElementById(`moment-${momentId}`)?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
+const toggleMomentComments = (momentId: number) => {
+  activeCommentMomentId.value = activeCommentMomentId.value === momentId ? null : momentId
+}
 
 const toggleComposer = () => {
   isComposerOpen.value = !isComposerOpen.value
@@ -152,6 +185,7 @@ const loadMoments = async () => {
       throw new Error(res.message || '动态加载失败')
     }
     moments.value = Array.isArray(res?.data) ? res.data : []
+    await scrollToMomentFromQuery()
   } catch (error: any) {
     console.warn('[moments] load failed', error)
     moments.value = []
@@ -270,6 +304,13 @@ const formatDateTime = (value: string | Date) => {
 
 onMounted(loadMoments)
 
+watch(
+  () => route.query.moment,
+  () => {
+    scrollToMomentFromQuery()
+  },
+)
+
 useSeoMeta({
   title: '动态 - Mofukaze',
 })
@@ -280,7 +321,7 @@ useSeoMeta({
   color: var(--theme-text);
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 18px;
 }
 
 .moments-hero {
@@ -302,7 +343,7 @@ useSeoMeta({
 }
 
 .moments-hero h1 {
-  font-size: clamp(34px, 6vw, 56px);
+  font-size: clamp(30px, 5vw, 48px);
   line-height: 1.08;
   margin: 0;
 }
@@ -449,7 +490,7 @@ useSeoMeta({
 .moment-body {
   background: var(--surface-reading);
   min-width: 0;
-  padding: clamp(18px, 2.6vw, 28px);
+  padding: clamp(16px, 2.2vw, 24px);
 }
 
 .moment-header {
@@ -463,7 +504,7 @@ useSeoMeta({
 }
 
 .moment-header h2 {
-  font-size: clamp(22px, 3vw, 32px);
+  font-size: clamp(20px, 2.6vw, 28px);
   line-height: 1.25;
   margin: 0;
 }
@@ -477,8 +518,8 @@ useSeoMeta({
 
 .moment-content {
   color: color-mix(in srgb, var(--theme-text) 90%, var(--readable-muted));
-  font-size: 17px;
-  line-height: 1.9;
+  font-size: 16px;
+  line-height: 1.82;
   overflow-wrap: anywhere;
 }
 
@@ -534,6 +575,36 @@ useSeoMeta({
   gap: 10px;
   justify-content: flex-end;
   margin-top: 18px;
+}
+
+.moment-footer {
+  border-top: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+
+.comment-toggle {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--theme-accent) 28%, var(--border-soft));
+  border-radius: 8px;
+  color: var(--readable-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 10px;
+  transition: color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+}
+
+.comment-toggle:hover {
+  border-color: color-mix(in srgb, var(--theme-accent) 52%, var(--border-soft));
+  color: var(--theme-text);
+  transform: translateY(-1px);
+}
+
+.moment-comments {
+  margin-top: 12px;
 }
 
 @media (max-width: 760px) {

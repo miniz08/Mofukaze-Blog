@@ -7,10 +7,10 @@
   border-radius: 8px;
   box-shadow: var(--content-shadow);
   overflow: hidden;
-  padding: clamp(18px, 2.2vw, 26px);
+  padding: clamp(14px, 1.8vw, 22px);
   position: relative;
   transition: box-shadow 0.35s ease, transform 0.3s ease, border-color 0.3s ease;
-  width: min(82%, 1180px);
+  width: min(86%, 1280px);
   will-change: box-shadow, transform;
   backdrop-filter: blur(10px) saturate(118%);
 }
@@ -58,7 +58,7 @@
 }
 
 .paper p {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.7;
 }
 
@@ -68,6 +68,38 @@
   max-width: 100%;
   overflow-x: auto;
   vertical-align: middle;
+}
+
+pre[data-line-numbers="true"] {
+  padding: 0 !important;
+}
+
+pre[data-line-numbers="true"] code {
+  display: block;
+  min-width: max-content;
+  padding: 12px 0;
+}
+
+pre[data-line-numbers="true"] .code-line {
+  display: block;
+  line-height: 1.72;
+  min-height: 1.72em;
+  padding: 0 16px 0 58px;
+  position: relative;
+  white-space: pre;
+}
+
+pre[data-line-numbers="true"] .code-line::before {
+  border-right: 1px solid color-mix(in srgb, var(--border-soft) 82%, transparent);
+  color: var(--readable-faint);
+  content: attr(data-line);
+  font-size: 12px;
+  inset: 0 auto 0 0;
+  padding-right: 10px;
+  position: absolute;
+  text-align: right;
+  user-select: none;
+  width: 38px;
 }
 
 .fixed-button {
@@ -80,7 +112,7 @@
   font-family: inherit;
   font-size: 15px;
   left: 20px;
-  padding: 10px 15px;
+  padding: 8px 12px;
   position: fixed;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   z-index: 3000;

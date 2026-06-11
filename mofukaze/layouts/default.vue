@@ -212,11 +212,11 @@ function updateEffectColors(theme: Theme) {
 @import '~/assets/css/animations.css';
 @import '~/assets/css/themes.css';
 .nav-spacer {
-  height: 160px;
+  height: 136px;
   transition: height 0.3s ease;
 }
 .nav-spacer.scrolled {
-  height: 80px;
+  height: 68px;
 }
 
 </style>

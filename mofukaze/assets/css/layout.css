@@ -175,6 +175,6 @@
   align-items: flex-start;
   display: flex;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 30px 16px;
   animation: contentRise 0.46s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
