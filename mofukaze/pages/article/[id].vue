@@ -399,7 +399,7 @@ useSeoMeta({
   height: auto;
   margin: 24px auto;
   max-height: min(82vh, 860px);
-  max-width: min(100%, 980px);
+  max-width: 100%;
   object-fit: contain;
   cursor: zoom-in;
 }

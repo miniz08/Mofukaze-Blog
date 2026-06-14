@@ -184,13 +184,14 @@ import { computed, nextTick, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import { Extension, Node, mergeAttributes } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
+import ImageResize from 'tiptap-extension-resize-image'
 import { Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, Undo, Redo, Minus, Link as LinkIcon, Sigma, Image as ImageIcon, Film } from 'lucide-vue-next'
 import Link from '@tiptap/extension-link'
 import { LatexNode } from './latexNode'
 import { renderLatexToHtml } from '~/utils/latex'
 
 const { uploadResource } = useResourceUpload()
+type MediaNodeName = 'imageResize' | 'video'
 // ------------------------------
 // Props & Emits
 // ------------------------------
@@ -388,7 +389,9 @@ const CustomShortcuts = Extension.create({
 // Editor State
 // ------------------------------
 const editor = ref(useEditor({
-  extensions: [StarterKit, Image, VideoNode, LatexNode, Link.configure({
+  extensions: [StarterKit, ImageResize.configure({
+    minWidth: 96,
+  }), VideoNode, LatexNode, Link.configure({
     openOnClick: true,
     linkOnPaste: true,
   }), CustomShortcuts],
@@ -426,27 +429,29 @@ onBeforeUnmount(() => {
 // ------------------------------
 // Image Upload (for toolbar button)
 // ------------------------------
-function replaceNodeSource(nodeName: 'image' | 'video', localSrc: string, remoteSrc: string) {
-  if (!editor.value) return
+function replaceNodeSource(nodeName: MediaNodeName, localSrc: string, remoteSrc: string) {
+  const instance = editor.value
+  if (!instance) return
 
-  let nodePos: number | null = null
-  editor.value.state.doc.descendants((node, pos) => {
-    if (node.type.name === nodeName && node.attrs.src === localSrc) {
-      nodePos = pos
+  let updated = false
+  instance.commands.command(({ state, tr, dispatch }) => {
+    state.doc.descendants((node, pos) => {
+      if (node.type.name !== nodeName || node.attrs.src !== localSrc) return
+
+      tr.setNodeMarkup(pos, undefined, { ...node.attrs, src: remoteSrc })
+      updated = true
       return false
-    }
+    })
+
+    if (!updated) return false
+
+    dispatch?.(tr)
+    return true
   })
 
-  const chain = editor.value.chain().focus()
-  if (nodePos !== null) {
-    chain
-      .setTextSelection({ from: nodePos, to: nodePos + 1 })
-      .updateAttributes(nodeName, { src: remoteSrc })
-      .run()
-    return
+  if (!updated) {
+    instance.chain().focus().updateAttributes(nodeName, { src: remoteSrc }).run()
   }
-
-  chain.updateAttributes(nodeName, { src: remoteSrc }).run()
 }
 
 async function addImage() {
@@ -460,14 +465,18 @@ async function addImage() {
     if (!file) return
 
     const imageSrc = URL.createObjectURL(file)
-    editor.value.chain().focus().setImage({ src: imageSrc }).run()
+    editor.value
+      .chain()
+      .focus()
+      .insertContent({ type: 'imageResize', attrs: { src: imageSrc, alt: file.name } })
+      .run()
 
     try {
       const title = generateRandomTitle()
       const uploadPath = await uploadImage(file, title)
 
       if (uploadPath) {
-        replaceNodeSource('image', imageSrc, uploadPath)
+        replaceNodeSource('imageResize', imageSrc, uploadPath)
       }
 
     } catch (error) {
@@ -683,14 +692,25 @@ function addLink() {
   margin-bottom: 0;
 }
 
-.editor-content-wrapper :deep(img) {
+.editor-content-wrapper :deep(.ProseMirror img:not([src^="data:image/svg+xml"])) {
   border-radius: 8px;
-  display: block;
   height: auto;
-  margin: 14px auto;
   max-height: 70vh;
   max-width: 100%;
   object-fit: contain;
+}
+
+.editor-content-wrapper :deep([data-resize-image-ui="resize-handle"]) {
+  background: var(--surface-reading) !important;
+  border-color: var(--theme-accent) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-accent) 18%, transparent);
+}
+
+.editor-content-wrapper :deep([data-resize-image-ui="position-controller"]) {
+  background: var(--surface-floating) !important;
+  border-color: var(--border-medium) !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--theme-shadow) 60%, transparent);
+  backdrop-filter: blur(12px) saturate(125%);
 }
 
 .editor-content-wrapper :deep(video) {

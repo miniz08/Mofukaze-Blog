@@ -538,7 +538,7 @@ useSeoMeta({
   height: auto;
   margin: 18px auto;
   max-height: min(78vh, 760px);
-  max-width: min(100%, 920px);
+  max-width: 100%;
   object-fit: contain;
 }
 
