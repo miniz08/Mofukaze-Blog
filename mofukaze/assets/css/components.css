@@ -46,10 +46,8 @@
 }
 
 .paper img {
-  display: block;
   height: auto;
-  margin: 10px auto;
-  max-width: 89%;
+  max-width: 100%;
 }
 
 .paper > * {

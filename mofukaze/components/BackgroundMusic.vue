@@ -475,8 +475,30 @@ onMounted(async () => {
 
 @media (max-width: 640px) {
   .music-player {
-    bottom: 14px;
-    right: 14px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    right: 12px;
+  }
+
+  .music-toggle {
+    height: 42px;
+    width: 42px;
+  }
+
+  .music-panel {
+    bottom: 54px;
+    gap: 12px;
+    max-height: min(72dvh, 560px);
+    overflow: auto;
+    padding: 12px;
+    width: min(340px, calc(100vw - 24px));
+  }
+
+  .music-controls {
+    grid-template-columns: 34px 42px 34px minmax(0, 1fr);
+  }
+
+  .music-controls > svg {
+    display: none;
   }
 }
 </style>

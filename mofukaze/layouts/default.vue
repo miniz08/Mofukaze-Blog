@@ -211,6 +211,7 @@ function updateEffectColors(theme: Theme) {
 @import '~/assets/css/components.css';
 @import '~/assets/css/animations.css';
 @import '~/assets/css/themes.css';
+@import '~/assets/css/responsive.css';
 .nav-spacer {
   height: 136px;
   transition: height 0.3s ease;

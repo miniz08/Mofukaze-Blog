@@ -395,13 +395,14 @@ useSeoMeta({
 .article-content :deep(img) {
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
-  display: block;
+  display: inline-block;
   height: auto;
-  margin: 24px auto;
+  margin: 0.35em 0.45em;
   max-height: min(82vh, 860px);
   max-width: 100%;
   object-fit: contain;
   cursor: zoom-in;
+  vertical-align: middle;
 }
 
 .article-content :deep(video) {
@@ -417,7 +418,10 @@ useSeoMeta({
   width: 100%;
 }
 
-.article-content :deep(p:has(> img:only-child)),
+.article-content :deep(p:has(> img:only-child)) {
+  margin: 0.45em 0;
+}
+
 .article-content :deep(p:has(> video:only-child)) {
   margin: 1.35em 0;
 }

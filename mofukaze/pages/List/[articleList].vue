@@ -129,6 +129,7 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-vue-next'
+import { decorateCodeBlocks } from '~/utils/richContent'
 
 type ArticleItem = {
   id: number
@@ -269,7 +270,7 @@ const loadArticleContent = async (id: number) => {
   currentArticleId.value = id
 
   if (articleCache.value[id]) {
-    currentArticleContent.value = articleCache.value[id].content
+    currentArticleContent.value = decorateCodeBlocks(articleCache.value[id].content)
     return
   }
 
@@ -289,7 +290,7 @@ const loadArticleContent = async (id: number) => {
       ...articleCache.value,
       [id]: detail,
     }
-    currentArticleContent.value = detail.content
+    currentArticleContent.value = decorateCodeBlocks(detail.content)
   } catch (err: any) {
     currentArticleContent.value = `<p>${err?.message || '正文加载失败'}</p>`
   } finally {
@@ -729,12 +730,13 @@ h1 {
 .quick-article-content :deep(img) {
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);
-  display: block;
+  display: inline-block;
   height: auto;
-  margin: 24px auto;
+  margin: 0.35em 0.45em;
   max-height: min(82vh, 860px);
   max-width: min(100%, 980px);
   object-fit: contain;
+  vertical-align: middle;
 }
 
 .quick-article-content :deep(video) {

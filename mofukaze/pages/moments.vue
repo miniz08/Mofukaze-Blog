@@ -534,12 +534,13 @@ useSeoMeta({
 .moment-content :deep(img) {
   border-radius: 8px;
   box-shadow: 0 10px 26px var(--theme-shadow);
-  display: block;
+  display: inline-block;
   height: auto;
-  margin: 18px auto;
+  margin: 0.35em 0.45em;
   max-height: min(78vh, 760px);
   max-width: 100%;
   object-fit: contain;
+  vertical-align: middle;
 }
 
 .moment-content :deep(video) {

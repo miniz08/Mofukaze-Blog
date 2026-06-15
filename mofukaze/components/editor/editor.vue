@@ -192,6 +192,24 @@ import { renderLatexToHtml } from '~/utils/latex'
 
 const { uploadResource } = useResourceUpload()
 type MediaNodeName = 'imageResize' | 'video'
+const inlineImageWrapperStyle = 'display: inline-block; float: none; margin: 0.25em 0.35em;'
+
+const getDefaultInlineImageWidth = () => {
+  const editorWidth = editor.value?.view.dom.clientWidth || 720
+  return Math.round(Math.min(360, Math.max(160, editorWidth * 0.42)))
+}
+
+const createInlineImageAttrs = (src: string, alt: string) => {
+  const width = getDefaultInlineImageWidth()
+
+  return {
+    src,
+    alt,
+    width,
+    containerStyle: `width: ${width}px; height: auto; cursor: pointer; display: inline-block; float: none; margin: 0.25em 0.35em;`,
+    wrapperStyle: inlineImageWrapperStyle,
+  }
+}
 // ------------------------------
 // Props & Emits
 // ------------------------------
@@ -390,7 +408,8 @@ const CustomShortcuts = Extension.create({
 // ------------------------------
 const editor = ref(useEditor({
   extensions: [StarterKit, ImageResize.configure({
-    minWidth: 96,
+    inline: true,
+    minWidth: 48,
   }), VideoNode, LatexNode, Link.configure({
     openOnClick: true,
     linkOnPaste: true,
@@ -468,7 +487,7 @@ async function addImage() {
     editor.value
       .chain()
       .focus()
-      .insertContent({ type: 'imageResize', attrs: { src: imageSrc, alt: file.name } })
+      .insertContent({ type: 'imageResize', attrs: createInlineImageAttrs(imageSrc, file.name) })
       .run()
 
     try {
@@ -684,6 +703,10 @@ function addLink() {
   outline: none;
 }
 
+.editor-content-wrapper :deep(.ProseMirror p) {
+  line-height: 1.9;
+}
+
 .editor-content-wrapper :deep(.ProseMirror p:first-child) {
   margin-top: 0;
 }
@@ -694,10 +717,13 @@ function addLink() {
 
 .editor-content-wrapper :deep(.ProseMirror img:not([src^="data:image/svg+xml"])) {
   border-radius: 8px;
+  display: inline-block;
   height: auto;
+  margin: 0;
   max-height: 70vh;
   max-width: 100%;
   object-fit: contain;
+  vertical-align: middle;
 }
 
 .editor-content-wrapper :deep([data-resize-image-ui="resize-handle"]) {
@@ -719,5 +745,57 @@ function addLink() {
   margin: 14px auto;
   max-height: 70vh;
   max-width: 100%;
+}
+
+@media (max-width: 820px) {
+  .editor-toolbar {
+    gap: 7px;
+    margin: 0.45rem 0;
+    overflow-x: auto;
+    padding: 9px;
+    scrollbar-width: none;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .toolbar-group {
+    flex: 0 0 auto;
+  }
+
+  .editor-toolbar button {
+    min-height: 34px;
+    min-width: 34px;
+    padding: 6px 8px;
+  }
+
+  .latex-input-panel {
+    margin: 0 0 0.7rem;
+  }
+
+  .editor-content-wrapper {
+    min-height: 220px;
+    padding: 10px;
+  }
+
+  .editor-content-wrapper :deep(.ProseMirror) {
+    min-height: 198px;
+  }
+}
+
+@media (max-width: 520px) {
+  .editor-toolbar {
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .editor-toolbar button {
+    font-size: 13px;
+  }
+
+  .editor-content-wrapper {
+    border-radius: 8px;
+  }
 }
 </style>

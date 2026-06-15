@@ -19,7 +19,7 @@
         </div>
       </header>
 
-      <div class="collection-content" v-html="content"></div>
+      <div class="collection-content" v-html="decoratedContent"></div>
     </article>
   </section>
 </template>
@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { decorateCodeBlocks } from '~/utils/richContent'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -43,6 +44,7 @@ const collectionId = ref(0)
 
 const ifVisible = computed(() => admin.isAdmin.value)
 const cdnRoot = computed(() => String(config.public.cdn || '').replace(/\/$/, ''))
+const decoratedContent = computed(() => decorateCodeBlocks(content.value || ''))
 
 const resolveCoverUrl = (item: any) => {
   const rawUrl = String(item?.imageUrl || '').trim()
@@ -201,7 +203,16 @@ onMounted(() => {
   overflow-wrap: anywhere;
 }
 
-.collection-content :deep(img),
+.collection-content :deep(img) {
+  border-radius: 8px;
+  box-shadow: 0 12px 30px var(--theme-shadow);
+  display: inline-block;
+  height: auto;
+  margin: 0.35em 0.45em;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
 .collection-content :deep(video) {
   border-radius: 8px;
   box-shadow: 0 12px 30px var(--theme-shadow);

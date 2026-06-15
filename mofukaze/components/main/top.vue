@@ -156,6 +156,8 @@ const searchResults = ref<{ articles: SearchResult[]; moments: SearchResult[] }>
   moments: [],
 })
 const scrollHysteresis = 12
+const compactBreakpoint = 820
+const isCompactViewport = ref(false)
 const ifVisible = computed(() => admin.isAdmin.value)
 let searchTimer = 0
 
@@ -303,7 +305,17 @@ const getMiniThreshold = () => {
   return Math.max(48, paperTop - navBottom - 8)
 }
 
+const syncCompactViewport = () => {
+  isCompactViewport.value = window.innerWidth <= compactBreakpoint
+}
+
 const handleScroll = () => {
+  if (isCompactViewport.value) {
+    isMiniNav.value = true
+    document.getElementById('content')?.classList.add('scrolled')
+    return
+  }
+
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop
   const scrollThreshold = getMiniThreshold()
 
@@ -317,20 +329,34 @@ const handleScroll = () => {
   }
 }
 
+const handleResize = () => {
+  syncCompactViewport()
+  handleScroll()
+}
+
 watch(searchQuery, () => {
   window.clearTimeout(searchTimer)
   searchTimer = window.setTimeout(runSearch, 220)
 })
 
+watch(
+  () => route.fullPath,
+  () => {
+    isSearchFocused.value = false
+    isMiniSearchOpen.value = false
+  },
+)
+
 onMounted(() => {
+  syncCompactViewport()
   window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('resize', handleScroll, { passive: true })
+  window.addEventListener('resize', handleResize, { passive: true })
   handleScroll()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('resize', handleScroll)
+  window.removeEventListener('resize', handleResize)
   window.clearTimeout(searchTimer)
 })
 </script>
@@ -623,6 +649,42 @@ onUnmounted(() => {
   }
 }
 
+@media (max-width: 1180px) {
+  .full-nav {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+    width: min(92vw, 1040px);
+  }
+
+  .brand-area {
+    min-width: 0;
+  }
+
+  .nav-links {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 900px) {
+  .full-nav {
+    top: 14px;
+    width: min(94vw, 760px);
+  }
+
+  .brand-name {
+    font-size: 22px;
+  }
+
+  .nav-link span {
+    display: none;
+  }
+
+  .nav-link {
+    min-width: 38px;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 760px) {
   .full-nav {
     align-items: stretch;
@@ -639,6 +701,36 @@ onUnmounted(() => {
 
   .nav-links {
     justify-content: flex-start;
+  }
+
+  .mini-nav {
+    top: max(10px, env(safe-area-inset-top));
+    width: min(100vw - 16px, 440px);
+  }
+
+  .mini-nav-content {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 7px 9px;
+    scrollbar-width: none;
+  }
+
+  .mini-nav-content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mini-nav-item {
+    flex: 0 0 34px;
+    height: 34px;
+    width: 34px;
+  }
+
+  .mini-search-shell {
+    width: min(100%, calc(100vw - 16px));
+  }
+
+  .search-panel {
+    max-height: min(360px, calc(100dvh - 118px));
   }
 }
 </style>

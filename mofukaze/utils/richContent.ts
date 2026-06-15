@@ -31,15 +31,16 @@ const STYLE_ALLOWLIST: Record<string, (value: string) => boolean> = {
   'margin-right': isDimensionValue,
   'margin-bottom': isDimensionValue,
   'margin-left': isDimensionValue,
+  'vertical-align': isOneOf(['baseline', 'middle', 'top', 'bottom', 'text-top', 'text-bottom']),
   display: isOneOf(['block', 'inline-block', 'inline', 'flex', 'none']),
   float: isOneOf(['left', 'right', 'none']),
 }
 
 const UNSAFE_STYLE_VALUE = /[<>{}\\()`@]|\/\*|\*\//;
+const INLINE_IMAGE_STYLE = 'display: inline-block; float: none; margin: 0.35em 0.45em; max-width: 100%; vertical-align: middle;'
 
 const sanitizeInlineStyle = (value: string) => {
-  const declarations: string[] = []
-  const seen = new Set<string>()
+  const declarations = new Map<string, string>()
 
   String(value || '')
     .split(';')
@@ -51,15 +52,14 @@ const sanitizeInlineStyle = (value: string) => {
       const declarationValue = rawDeclaration.slice(colonIndex + 1).trim()
       const validate = STYLE_ALLOWLIST[property]
 
-      if (!property || !declarationValue || seen.has(property)) return
+      if (!property || !declarationValue) return
       if (!validate || UNSAFE_STYLE_VALUE.test(declarationValue) || /!important/i.test(declarationValue)) return
       if (!validate(declarationValue)) return
 
-      declarations.push(`${property}: ${declarationValue};`)
-      seen.add(property)
+      declarations.set(property, `${property}: ${declarationValue};`)
     })
 
-  return declarations.join(' ')
+  return Array.from(declarations.values()).join(' ')
 }
 
 const getHtmlAttr = (attrs: string, name: string) => {
@@ -84,7 +84,7 @@ const decorateResizableImages = (html: string) => {
     if (!containerStyle) return match
 
     const existingStyle = getHtmlAttr(rawAttrs, 'style')
-    const safeStyle = sanitizeInlineStyle(`${existingStyle}; ${containerStyle}`)
+    const safeStyle = sanitizeInlineStyle(`${existingStyle}; ${containerStyle}; ${INLINE_IMAGE_STYLE}`)
     if (!safeStyle) return match
 
     const selfClosing = /\/\s*$/.test(rawAttrs)
