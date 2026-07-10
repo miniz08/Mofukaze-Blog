@@ -369,8 +369,8 @@ const CustomShortcuts = Extension.create({
         if (!this.editor.isActive('codeBlock')) return false
         return this.editor.commands.insertContent('\n')
       },
-      'Mod-Shift-l': () => openLatexInput(),
-      'Mod-l': () => {
+      'Mod-l': () => openLatexInput(),
+      'Mod-alt-l': () => {
       const url = prompt("请输入链接 URL 💡")
       if (url) {
       this.editor
