@@ -391,7 +391,14 @@ const CustomShortcuts = Extension.create({
         addVideo()
         return true
       },
-
+      //latex确认插入
+      'Mod-Enter': () => {
+        if (isLatexMode.value) {
+          applyLatex()
+          return true
+        }
+        return false
+      },
       // Tab（列表缩进）
       Tab: () => {
         if (this.editor.isActive('listItem')) {
