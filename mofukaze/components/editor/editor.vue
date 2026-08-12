@@ -392,7 +392,7 @@ const CustomShortcuts = Extension.create({
         return true
       },
       //latex确认插入
-      'Mod-Enter': () => {
+      'Mod-Ctrl-Enter': () => {
         if (isLatexMode.value) {
           applyLatex()
           return true
